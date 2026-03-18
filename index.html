@@ -27,5 +27,26 @@
         />
       </main>
     </div>
+
+    <img id="snail" src="asset/snail-ani/frame0000.png" alt="" aria-hidden="true" />
+
+    <script>
+      (function () {
+        const snail = document.getElementById("snail");
+        if (!snail) return;
+
+        const frames = Array.from({ length: 14 }, (_, i) =>
+          `asset/snail-ani/frame${String(i).padStart(4, "0")}.png`
+        );
+        let idx = 0;
+        let dir = 1;
+
+        setInterval(() => {
+          snail.src = frames[idx];
+          idx += dir;
+          if (idx >= frames.length - 1 || idx <= 0) dir = -dir;
+        }, 200);
+      })();
+    </script>
   </body>
 </html>

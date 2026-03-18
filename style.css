@@ -62,3 +62,40 @@ body {
   height: auto;
   display: block;
 }
+
+:root {
+  --snail-size: 110px;
+}
+
+#snail {
+  position: fixed;
+  width: var(--snail-size);
+  height: auto;
+  z-index: 1000;
+  pointer-events: none;
+  animation: snail-edge 400s linear infinite;
+  animation-direction: alternate;  transform: rotate(-10deg);
+  transform-origin: center;}
+
+@keyframes snail-edge {
+  0% {
+    top: 0;
+    left: 0;
+  }
+  25% {
+    top: 0;
+    left: calc(100vw - var(--snail-size));
+  }
+  50% {
+    top: calc(100vh - var(--snail-size));
+    left: calc(100vw - var(--snail-size));
+  }
+  75% {
+    top: calc(100vh - var(--snail-size));
+    left: 0;
+  }
+  100% {
+    top: 0;
+    left: 0;
+  }
+}
