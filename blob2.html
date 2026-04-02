@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>blob2 landing</title>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body.blob2-page {
+        min-height: 100vh;
+        font-family: "Univers", sans-serif;
+      }
+      .blob2-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        width: 100vw;
+        height: 100vh;
+      }
+      .blob2-tile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .blob2-tile--a img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .blob2-tile--b {
+        background: #f8c3d8;
+      }
+      .blob2-tile--c {
+        background: #cce6ff;
+      }
+      .blob2-tile--d {
+        background: #d8f4c3;
+      }
+      .back-link {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #000;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body class="blob2-page">
+    <a class="back-link" href="index.html">← Back</a>
+    <main class="blob2-grid" aria-label="Blob2 preview quad layout">
+      <section class="blob2-tile blob2-tile--a" aria-label="fairy code image section">
+        <a href="fairycode.html" target="_blank" title="Open full-screen fairy code">
+          <img src="asset/fairy-code.png" alt="fairy code" />
+        </a>
+      </section>
+      <section class="blob2-tile blob2-tile--b" aria-label="placeholder section">B</section>
+      <section class="blob2-tile blob2-tile--c" aria-label="placeholder section">C</section>
+      <section class="blob2-tile blob2-tile--d" aria-label="placeholder section">D</section>
+    </main>
+  </body>
+</html>

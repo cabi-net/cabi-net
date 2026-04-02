@@ -8,45 +8,24 @@
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="style.css">
   </head>
-  <body>
-    <div class="collage">
-      <a class="collage-link" href="#" style="top: 10%; left: 12%;">
+  <body class="home-page">
+    <main class="home">
+      <a class="portal" href="blob2.html" target="_blank" style="top: 10%; left: 12%;">
         <img src="asset/blob2-logo.png" alt="blob2 logo" />
       </a>
-      <a class="collage-link" href="#" style="top: 18%; left: 75%;">
+      <a class="portal" href="#" style="top: 18%; left: 75%;">
         <img src="asset/blob3-logo.png" alt="blob3 logo" />
       </a>
-      <a class="collage-link p-d" href="pd.html" style="top: 68%; left: 20%;">
+      <a class="portal p-d" href="pd.html" style=" width: 310px; top: 68%; left: 20%;">
         <img src="asset/p-d-logo-before.png" alt="programming-and-design logo" />
       </a>
 
-      <main class="logo">
+      <section class="logo">
         <img
           src="asset/world-princess-logo.png"
           alt="cabi-net logo"
         />
-      </main>
-    </div>
-
-    <img id="snail" src="asset/snail-ani/frame0000.png" alt="" aria-hidden="true" />
-
-    <script>
-      (function () {
-        const snail = document.getElementById("snail");
-        if (!snail) return;
-
-        const frames = Array.from({ length: 14 }, (_, i) =>
-          `asset/snail-ani/frame${String(i).padStart(4, "0")}.png`
-        );
-        let idx = 0;
-        let dir = 1;
-
-        setInterval(() => {
-          snail.src = frames[idx];
-          idx += dir;
-          if (idx >= frames.length - 1 || idx <= 0) dir = -dir;
-        }, 200);
-      })();
-    </script>
+      </section>
+    </main>
   </body>
 </html>
