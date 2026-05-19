@@ -1,0 +1,67 @@
+---
+import '../../styles/global.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>daisy — cabi-net</title>
+</head>
+<body>
+  <a href="/work" class="back mono">← work</a>
+  <iframe
+    src="https://cabi-net.github.io/loads-me-not"
+    title="daisy"
+    allowfullscreen
+  ></iframe>
+</body>
+</html>
+
+<!--
+epigraph:
+  time and time and time and time
+  and again
+
+  eleven mounted clouds,
+  machines of infinite rotation,
+  of which I, the insatiable ballerina
+
+  i tell you i love you, i tell you i will
+-->
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+iframe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.back {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+  font-size: 0.75rem;
+  color: rgba(232, 232, 232, 0.5);
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.back:hover {
+  color: rgba(232, 232, 232, 1);
+  opacity: 1;
+}
+</style>

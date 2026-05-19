@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// Add your images here
+// annotation is optional — leave empty string for no text
+const pieces = [
+  { src: '/assets/visual/piece-01.jpg', alt: '', annotation: '' },
+  { src: '/assets/visual/piece-02.jpg', alt: '', annotation: '' },
+  { src: '/assets/visual/piece-03.jpg', alt: '', annotation: '' },
+  // add more — keep filenames consistent
+];
+---
+<Base title="visual">
+  <div class="visual-page">
+    <div class="gallery">
+      {pieces.map(p => (
+        <figure class="gallery-item">
+          <img src={p.src} alt={p.alt} loading="lazy" />
+          {p.annotation && (
+            <figcaption class="muted mono">{p.annotation}</figcaption>
+          )}
+        </figure>
+      ))}
+    </div>
+  </div>
+</Base>
+
+<style>
+.visual-page {
+  /* No max-width here — let it breathe or go full bleed */
+}
+
+.gallery {
+  columns: 2;
+  gap: var(--space-lg);
+  /* Change to columns: 3 for denser layouts */
+  /* Or use CSS grid for uniform grid: */
+  /* display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: var(--space-lg); */
+}
+
+.gallery-item {
+  break-inside: avoid;
+  margin-bottom: var(--space-lg);
+}
+
+.gallery-item img {
+  width: 100%;
+  /* Add filter, mix-blend-mode, or border here for effect */
+}
+
+figcaption {
+  margin-top: var(--space-sm);
+  font-size: var(--size-xs);
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .gallery { columns: 1; }
+}
+</style>

@@ -1,0 +1,176 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="syllabus">
+  <div class="syllabus-page">
+
+    <p class="syllabus-intro mono muted">a syllabus for no institution (except perhaps for cabi-nation)</p>
+
+    <div id="daisy-loading" aria-hidden="true">
+      <canvas id="syllabus-daisy" width="80" height="80"></canvas>
+    </div>
+
+    <div id="cards" class="cards hidden"></div>
+
+  </div>
+</Base>
+
+<style>
+.syllabus-page {
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.syllabus-intro {
+  font-size: var(--size-sm);
+  max-width: 52ch;
+  line-height: 1.6;
+}
+
+#daisy-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+}
+
+#daisy-loading.hidden {
+  display: none;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 640px;
+  font-family: var(--font-mono);
+}
+
+.cards.hidden {
+  display: none;
+}
+
+:global(.card) {
+  display: grid;
+  grid-template-columns: 3ch 1fr;
+  gap: 0 var(--space-md);
+  line-height: 1.7;
+}
+
+:global(.card-index) {
+  color: var(--accent);
+  font-size: var(--size-sm);
+  padding-top: 1px;
+}
+
+:global(.card-content) {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+:global(.card-title) {
+  font-size: var(--size-sm);
+  color: var(--fg);
+}
+
+:global(.card-title a) {
+  text-decoration: none;
+}
+
+:global(.card-title a:hover) {
+  color: var(--accent);
+}
+
+:global(.card-source) {
+  font-size: var(--size-xs);
+  color: var(--fg-muted);
+  opacity: 0.5;
+}
+
+:global(.card-annotation) {
+  font-size: var(--size-sm);
+  color: var(--fg-muted);
+  margin-top: var(--space-xs);
+  line-height: 1.6;
+}
+</style>
+
+<script>
+  const CHANNEL = 'syllabus-pqawpwm96ww';
+  const loading = document.getElementById('daisy-loading')!;
+  const cardsEl = document.getElementById('cards')!;
+  const canvas = document.getElementById('syllabus-daisy') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
+  const petalCount = 10;
+  const fps = 8;
+  const interval = 1000 / fps;
+  let lastStep = 0, activeStep = 0, raf: number;
+
+  function drawDaisy(ts: number) {
+    if (ts - lastStep >= interval) {
+      activeStep = (activeStep + 1) % petalCount;
+      lastStep = ts;
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < petalCount; i++) {
+      const a = (Math.PI * 2 / petalCount) * i;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(a);
+      ctx.beginPath();
+      ctx.ellipse(18, 0, 10, 6, 0, 0, Math.PI * 2);
+      ctx.fillStyle = i === activeStep ? 'rgba(232,225,252,1)' : 'rgba(200,180,220,0.35)';
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff9fe5';
+    ctx.fill();
+    raf = requestAnimationFrame(drawDaisy);
+  }
+
+  raf = requestAnimationFrame(drawDaisy);
+
+  fetch(`https://api.are.na/v2/channels/${CHANNEL}?per=100`)
+    .then(r => r.json())
+    .then(data => {
+      cancelAnimationFrame(raf);
+      loading.classList.add('hidden');
+
+      const blocks = (data.contents || []).filter((b: any) => b.class !== 'Channel');
+
+      blocks.forEach((block: any) => {
+        const source = block.source?.url || block.attachment?.url || '';
+        const host = source ? new URL(source).hostname.replace('www.', '') : '';
+        const title = block.title || 'untitled';
+        const annotation = block.description || '';
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        const idx = String(blocks.indexOf(block) + 1).padStart(2, '0');
+        card.innerHTML = `
+          <div class="card-index">[${idx}]</div>
+          <div class="card-content">
+            <div class="card-title"><a href="${source}" target="_blank" rel="noopener">${title}</a></div>
+            ${host ? `<div class="card-source">${host}</div>` : ''}
+            ${annotation ? `<div class="card-annotation">— ${annotation}</div>` : ''}
+          </div>
+        `;
+
+        cardsEl.appendChild(card);
+      });
+
+      cardsEl.classList.remove('hidden');
+    })
+    .catch(() => {
+      cancelAnimationFrame(raf);
+      loading.classList.add('hidden');
+      cardsEl.innerHTML = '<p class="muted mono">could not load syllabus.</p>';
+      cardsEl.classList.remove('hidden');
+    });
+</script>

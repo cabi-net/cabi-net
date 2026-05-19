@@ -1,0 +1,80 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="postcard">
+  <article class="project-page">
+
+    <header class="project-header">
+      <h1>postcard</h1>
+      <div class="project-meta mono muted">
+        <span>2025</span>
+        <span>p5.js / web / interactive</span>
+      </div>
+    </header>
+
+    <section class="project-body">
+      <div class="grape-wrap">
+        <div class="grape" role="img" aria-label="grape"></div>
+        <a href="https://cabi-net.github.io/postcard" target="_blank" rel="noopener" class="cta">open postcard ↗</a>
+      </div>
+    </section>
+
+  </article>
+</Base>
+
+<style>
+.project-page { max-width: 900px; }
+
+.project-header { margin-bottom: var(--space-xl); }
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-3xl);
+  font-weight: normal;
+  margin-bottom: var(--space-md);
+}
+
+.project-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+.grape-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grape {
+  height: 300px;
+  width: 300px;
+  background-color: var(--accent);
+  mask-image: url('/assets/main/grape-white.png');
+  -webkit-mask-image: url('/assets/main/grape-white.png');
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+  display: block;
+}
+
+.cta {
+  position: absolute;
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+  font-size: var(--size-2xl);
+  color: var(--fg);
+  text-decoration: none;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 0, 0, 0.4);
+  transition: color 200ms ease;
+}
+
+.cta:hover {
+  color: var(--accent);
+  opacity: 1;
+}
+</style>

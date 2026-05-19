@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// COPY THIS FILE for each new project page
+// filename = the slug you used in work/index.astro
+---
+<Base title="project title">
+  <article class="project-page">
+
+    <header class="project-header">
+      <h1>project title</h1>
+      <div class="project-meta mono muted">
+        <span>YEAR</span>
+        <span>tag / tag / tag</span>
+        <!-- <a href="https://github.com/cabi-net/REPO" target="_blank" rel="noopener">github ↗</a> -->
+        <!-- <a href="https://LIVE-URL" target="_blank" rel="noopener">live ↗</a> -->
+      </div>
+    </header>
+
+    <section class="project-body">
+
+      <!-- 2–3 sentence description of what the project is and does -->
+      <p>Description goes here.</p>
+
+      <!-- MEDIA BLOCK — choose one or combine -->
+      <!-- Static image -->
+      <!-- <img src="/assets/PROJECT-screenshot.png" alt="description" /> -->
+
+      <!-- GIF / video demo -->
+      <!-- <img src="/assets/PROJECT-demo.gif" alt="demo" /> -->
+
+      <!-- p5.js embed -->
+      <!-- <iframe src="https://editor.p5js.org/cabi-net/full/SKETCH_ID" width="100%" height="500" style="border:none;"></iframe> -->
+
+      <!-- GitHub embed or link -->
+      <!-- <a href="https://github.com/cabi-net/REPO" class="repo-link mono">→ view repository</a> -->
+
+      <!-- Concept/process notes (optional) -->
+      <!-- <p>More context, process notes, or intentions here.</p> -->
+
+    </section>
+
+  </article>
+</Base>
+
+<style>
+.project-page { max-width: 720px; }
+
+.project-header { margin-bottom: var(--space-xl); }
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-3xl);
+  font-weight: normal;
+  margin-bottom: var(--space-md);
+}
+
+.project-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+.project-body p {
+  max-width: 65ch;
+  line-height: 1.8;
+}
+
+.project-body p + p { margin-top: var(--space-lg); }
+
+.project-body img,
+.project-body iframe {
+  margin: var(--space-xl) 0;
+  width: 100%;
+}
+
+.repo-link {
+  display: inline-block;
+  margin-top: var(--space-lg);
+  font-size: var(--size-sm);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2px;
+}
+</style>

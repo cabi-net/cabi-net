@@ -1,0 +1,111 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// Add your poems here
+const poems = [
+  {
+    title: 'poem title',
+    body: `Line one
+Line two
+Line three
+
+Second stanza here
+continues here`,
+  },
+  // add more objects — same shape
+];
+---
+<Base title="writing">
+  <div class="writing-page">
+
+    <aside class="poem-index mono">
+      {poems.map((p, i) => (
+        <a href={`#poem-${i}`} class="index-item muted">{p.title}</a>
+      ))}
+    </aside>
+
+    <div class="poems">
+      {poems.map((p, i) => (
+        <article class="poem" id={`poem-${i}`}>
+          <h2 class="poem-title">{p.title}</h2>
+          <pre class="poem-body">{p.body}</pre>
+          <nav class="poem-nav mono muted">
+            {i > 0 && <a href={`#poem-${i - 1}`}>← prev</a>}
+            {i < poems.length - 1 && <a href={`#poem-${i + 1}`}>next →</a>}
+          </nav>
+        </article>
+      ))}
+    </div>
+
+  </div>
+</Base>
+
+<style>
+.writing-page {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--space-2xl);
+  max-width: 800px;
+}
+
+.poem-index {
+  position: sticky;
+  top: calc(60px + var(--space-xl)); /* below nav */
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.index-item {
+  font-size: var(--size-xs);
+  line-height: 1.6;
+  transition: color var(--transition);
+}
+
+.index-item:hover { color: var(--fg); }
+
+.poems {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.poem {
+  scroll-margin-top: calc(60px + var(--space-xl));
+}
+
+.poem-title {
+  font-family: var(--font-display);
+  font-size: var(--size-lg);
+  font-weight: normal;
+  margin-bottom: var(--space-lg);
+}
+
+.poem-body {
+  font-family: var(--font-body);
+  font-size: var(--size-md);
+  line-height: 1.9;
+  white-space: pre-wrap;
+  max-width: 50ch;
+}
+
+.poem-nav {
+  margin-top: var(--space-xl);
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+@media (max-width: 600px) {
+  .writing-page {
+    grid-template-columns: 1fr;
+  }
+  .poem-index {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+}
+</style>

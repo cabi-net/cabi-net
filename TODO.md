@@ -43,6 +43,10 @@
 ## daisy
 - [ ] redesign epigraph presentation / consider embedding text into the p5.js piece
 
+## devops
+- [ ] github actions: auto-build and deploy dist/ to Neocities on push
+- [ ] github actions: also deploy to GitHub Pages on push (currently manual)
+
 ## cabinet of curiosities (future)
 - [ ] decide scope — artists, tools, writing, internet ephemera, digital foraging
 - [ ] consider as expansion of syllabus or separate section

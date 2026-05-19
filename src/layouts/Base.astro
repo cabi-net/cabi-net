@@ -1,0 +1,188 @@
+---
+import '../styles/global.css';
+
+const { title = 'cabi-net', hideNav = false } = Astro.props;
+const nav = [
+  { label: 'work',        href: '/work' },
+  { label: 'writing',     href: '/writing' },
+  { label: 'syllabus',    href: '/syllabus' },
+  { label: 'about',       href: '/about' },
+];
+const current = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title} — cabi-net</title>
+  <meta name="description" content="Portfolio of Meric Sila Taskin" />
+  <!-- Add your font imports here -->
+</head>
+<body>
+  <header>
+    <a href="/" class="wordmark">cabi-net</a>
+    {!hideNav && (
+      <nav>
+        {nav.map(item => (
+          <a
+            href={item.href}
+            class={current.startsWith(item.href) ? 'active' : ''}
+          >
+            {item.label}
+          </a>
+        ))}
+        <a href="https://cabi-net.github.io/postcard" class="postcard-link" target="_blank" rel="noopener">send a postcard ↗</a>
+      </nav>
+    )}
+  </header>
+
+  <div id="throbber" aria-hidden="true">
+    <canvas id="daisy-canvas" width="120" height="120"></canvas>
+  </div>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer>
+    <span class="muted mono">© {new Date().getFullYear()}</span>
+  </footer>
+</body>
+</html>
+
+<style>
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-xl);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 100;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+  font-size: var(--size-md);
+}
+
+nav {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-sm);
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+}
+
+nav a.active {
+  border-bottom: 1px solid var(--fg);
+  padding-bottom: 1px;
+}
+
+.postcard-link {
+  margin-left: var(--space-lg);
+  padding-left: var(--space-lg);
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+}
+
+main {
+  padding: var(--space-xl);
+  /* Override per-page as needed */
+}
+
+footer {
+  padding: var(--space-lg) var(--space-xl);
+  border-top: 1px solid var(--border);
+  font-size: var(--size-xs);
+}
+
+@media (max-width: 600px) {
+  header { flex-direction: column; gap: var(--space-md); }
+  main   { padding: var(--space-lg) var(--space-md); }
+  nav    { gap: var(--space-md); flex-wrap: wrap; }
+}
+
+#throbber {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 400ms ease;
+}
+
+#throbber.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+</style>
+
+<script>
+  const throbber = document.getElementById('throbber');
+  const canvas = document.getElementById('daisy-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const W = canvas.width;
+  const H = canvas.height;
+  const cx = W / 2;
+  const cy = H / 2;
+  let frame = 0;
+  let raf: number;
+
+  const petalCount = 10;
+  const fps = 8;
+  const interval = 1000 / fps;
+  let lastStep = 0;
+  let activeStep = 0;
+
+  function drawDaisy(ts: number) {
+    if (ts - lastStep >= interval) {
+      activeStep = (activeStep + 1) % petalCount;
+      lastStep = ts;
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = 0; i < petalCount; i++) {
+      const a = (Math.PI * 2 / petalCount) * i;
+      const active = i === activeStep;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(a);
+      ctx.beginPath();
+      ctx.ellipse(22, 0, 13, 7, 0, 0, Math.PI * 2);
+      ctx.fillStyle = active ? 'rgba(232, 225, 252, 1)' : 'rgba(200, 180, 220, 0.35)';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // center
+    ctx.beginPath();
+    ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff9fe5';
+    ctx.fill();
+
+    raf = requestAnimationFrame(drawDaisy);
+  }
+
+  raf = requestAnimationFrame(drawDaisy);
+
+  function hide() {
+    cancelAnimationFrame(raf);
+    throbber!.classList.add('hidden');
+    setTimeout(() => { throbber!.style.display = 'none'; }, 450);
+  }
+
+  if (document.readyState === 'complete') {
+    hide();
+  } else {
+    window.addEventListener('load', hide);
+    setTimeout(hide, 4000); // fallback: always hide after 4s
+  }
+</script>

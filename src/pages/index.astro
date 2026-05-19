@@ -1,0 +1,357 @@
+---
+import '../styles/global.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>cabi-net</title>
+</head>
+<body>
+  <div id="throbber-index">
+    <canvas id="daisy-index" width="120" height="120"></canvas>
+  </div>
+
+  <section class="intro">
+    <canvas id="spiral-bg"></canvas>
+    <div id="gfx-layer"></div>
+    <a href="/" class="wordmark">cabi-net</a>
+  </section>
+</body>
+</html>
+
+<style>
+.intro {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background: #5c0029;
+  overflow: hidden;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#spiral-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.wordmark {
+  position: fixed;
+  top: var(--space-lg);
+  left: var(--space-xl);
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+  font-size: var(--size-md);
+  color: var(--fg);
+  text-decoration: none;
+  z-index: 100;
+}
+
+#throbber-index {
+  position: fixed;
+  inset: 0;
+  background: #5c0029;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 400ms ease;
+}
+
+#throbber-index.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#gfx-layer img {
+  position: fixed;
+  height: auto;
+  image-rendering: pixelated;
+  display: block;
+  pointer-events: none;
+  z-index: 50;
+}
+
+</style>
+
+<script>
+// daisy throbber
+(function(){
+  const throbber = document.getElementById('throbber-index');
+  const canvas = document.getElementById('daisy-index');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2;
+  const petalCount = 10, interval = 1000/8;
+  let lastStep = 0, activeStep = 0, raf;
+
+  function drawDaisy(ts) {
+    if (ts - lastStep >= interval) { activeStep = (activeStep + 1) % petalCount; lastStep = ts; }
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < petalCount; i++) {
+      const a = (Math.PI * 2 / petalCount) * i;
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(a);
+      ctx.beginPath(); ctx.ellipse(22, 0, 14, 8, 0, 0, Math.PI * 2);
+      ctx.fillStyle = i === activeStep ? 'rgba(232,225,252,1)' : 'rgba(200,180,220,0.35)';
+      ctx.fill(); ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff9fe5'; ctx.fill();
+    raf = requestAnimationFrame(drawDaisy);
+  }
+  raf = requestAnimationFrame(drawDaisy);
+
+  function hide() {
+    cancelAnimationFrame(raf);
+    throbber.classList.add('hidden');
+    setTimeout(() => { throbber.style.display = 'none'; }, 450);
+  }
+
+  if (document.readyState === 'complete') { hide(); }
+  else { window.addEventListener('load', hide); setTimeout(hide, 4000); }
+})();
+
+(function(){
+const canvas = document.getElementById('spiral-bg');
+const ctx = canvas.getContext('2d');
+let W, H, t = 0, mouse = {x:-999, y:-999}, trail = [];
+const PIXEL = 4, TRAIL = 55;
+const PINK = '#ff9fe5', PINK2 = '#c9a0b0', LILAC = '#8ae1fc', WHITE = '#ffd6f0', BG = '#5c0029';
+
+function hexAlpha(hex, a){
+  const h = parseInt(hex.replace('#',''), 16);
+  return `rgba(${(h>>16)&255},${(h>>8)&255},${h&255},${+a.toFixed(3)})`;
+}
+
+function resize(){
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  initSpirals();
+}
+
+function pix(x, y){ return [Math.round(x/PIXEL)*PIXEL, Math.round(y/PIXEL)*PIXEL]; }
+function smoothstep(e0, e1, x){ x = Math.max(0, Math.min(1,(x-e0)/(e1-e0))); return x*x*(3-2*x); }
+function noise(x, y, z){
+  return Math.sin(x*2.1+z*1.3)*Math.cos(y*1.7+z*0.9)*0.5
+        +Math.sin(x*4.3+y*3.1+z*2.1)*0.25
+        +Math.cos(x*0.7+y*1.2+z*3.3)*0.25;
+}
+
+function drawStar(cx, cy, r, col){
+  const ps = PIXEL, pts = 5, inner = r*0.42;
+  const [sx, sy] = pix(cx, cy);
+  ctx.fillStyle = col;
+  for(let i = 0; i < pts*2; i++){
+    const angle = (i/pts)*Math.PI - Math.PI/2;
+    const rad = i%2===0 ? r : inner;
+    const px = Math.round((sx+Math.cos(angle)*rad)/ps)*ps;
+    const py = Math.round((sy+Math.sin(angle)*rad)/ps)*ps;
+    ctx.fillRect(px-ps/2, py-ps/2, ps, ps);
+  }
+  ctx.fillStyle = WHITE;
+  ctx.fillRect(sx-ps/2, sy-ps/2, ps, ps);
+}
+
+const tableau = new Image();
+tableau.src = '/assets/main/tableau.png';
+
+const SPIRALS = [];
+function initSpirals(){
+  SPIRALS.length = 0;
+  const cx = W/2, cy = H/2;
+  const configs = [
+    {ox:cx,      oy:cy,       turns:5,   arms:3, col:PINK,  alpha:0.5,  dir:1,  speed:0.15, tight:20, label:'work',        href:'/work'},
+    {ox:cx*0.4,  oy:cy*0.5,   turns:4,   arms:2, col:LILAC, alpha:0.38, dir:-1, speed:0.11, tight:24, label:'writing',     href:'/writing'},
+    {ox:cx*1.55, oy:cy*1.35,  turns:3.5, arms:2, col:PINK2, alpha:0.32, dir:1,  speed:0.2,  tight:18, label:'syllabus', href:'/syllabus'},
+    {ox:cx*0.65, oy:cy*1.55,  turns:3,   arms:1, col:PINK,  alpha:0.22, dir:-1, speed:0.13, tight:22, label:'about',       href:'/about'},
+    {ox:cx*1.35, oy:cy*0.38,  turns:3.5, arms:2, col:LILAC, alpha:0.28, dir:1,  speed:0.17, tight:15, label:'postcard',    href:'https://cabi-net.github.io/postcard'},
+  ];
+  for(const c of configs) SPIRALS.push(c);
+}
+
+let hoveredSpiral = null;
+let mouseActive = false;
+
+function drawSpirals(){
+  const mx = mouse.x > 0 ? mouse.x : W/2;
+  const my = mouse.y > 0 ? mouse.y : H/2;
+  hoveredSpiral = null;
+  let closestDist = Infinity;
+  for(const s of SPIRALS){
+    const ddx = s.ox-mx, ddy = s.oy-my;
+    const distToMouse = Math.sqrt(ddx*ddx+ddy*ddy);
+    if(distToMouse < closestDist){ closestDist = distToMouse; hoveredSpiral = s; }
+    const influence = smoothstep(1, 0, distToMouse/(Math.min(W,H)*0.55));
+    const steps = Math.floor(s.turns*72);
+    for(let arm = 0; arm < s.arms; arm++){
+      const armOffset = (arm/s.arms)*Math.PI*2;
+      ctx.beginPath();
+      let first = true;
+      for(let i = 0; i <= steps; i++){
+        const angle = s.dir*(i/72)*Math.PI*2+armOffset+t*s.speed;
+        const baseR = i*(s.tight/72)*6;
+        const twistedAngle = angle+s.dir*influence*60*(i/steps);
+        const r = Math.max(0, baseR-influence*baseR*0.55);
+        const wobble = noise(Math.cos(angle)*0.4, Math.sin(angle)*0.4, t*0.5+arm)*influence*30;
+        const nx = s.ox+Math.cos(twistedAngle)*(r+wobble);
+        const ny = s.oy+Math.sin(twistedAngle)*(r+wobble);
+        const [px, py] = pix(nx, ny);
+        first ? (ctx.moveTo(px,py), first=false) : ctx.lineTo(px, py);
+      }
+      const breathe = 0.75+0.25*Math.sin(t*s.speed*3+arm);
+      ctx.strokeStyle = hexAlpha(s.col, Math.min(0.95, s.alpha*breathe*(1+influence*0.8)));
+      ctx.lineWidth = 1+influence*1.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+      for(let i = 4; i <= steps; i += 6){
+        const angle = s.dir*(i/72)*Math.PI*2+armOffset+t*s.speed;
+        const baseR = i*(s.tight/72)*6;
+        const twistedAngle = angle+s.dir*influence*60*(i/steps);
+        const r = Math.max(0, baseR-influence*baseR*0.55);
+        const wobble = noise(Math.cos(angle)*0.4, Math.sin(angle)*0.4, t*0.5+arm)*influence*30;
+        const nx = s.ox+Math.cos(twistedAngle)*(r+wobble);
+        const ny = s.oy+Math.sin(twistedAngle)*(r+wobble);
+        const [px, py] = pix(nx, ny);
+        const bright = Math.sin(t*s.speed*6+i*0.4)*0.5+0.5;
+        if(bright > 0.55){
+          ctx.fillStyle = hexAlpha(s.col, Math.min(0.9,(s.alpha+influence*0.4)*bright));
+          ctx.fillRect(px, py, PIXEL-1, PIXEL-1);
+        }
+      }
+    }
+  }
+
+  // draw stamped label for hovered spiral only, after mouse interaction
+  if(hoveredSpiral && mouseActive){
+    const [lx, ly] = pix(hoveredSpiral.ox, hoveredSpiral.oy);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = '700 22px Peix, monospace';
+
+    // dark shadow offset — drawn multiple times for density
+    ctx.fillStyle = BG;
+    for(const [ox, oy] of [[-2,-2],[2,-2],[-2,2],[2,2],[-3,0],[3,0],[0,-3],[0,3]]){
+      ctx.fillText(hoveredSpiral.label, lx+ox, ly+oy);
+    }
+    // bright top layer
+    ctx.fillStyle = PINK;
+    ctx.fillText(hoveredSpiral.label, lx, ly);
+  }
+}
+
+function frame(){
+  t += 0.016;
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  drawSpirals();
+  /*
+  if(mouse.x > 0 && mouse.x < W){
+    trail.push({x:mouse.x, y:mouse.y});
+    if(trail.length > TRAIL) trail.shift();
+  }
+  for(let i = 1; i < trail.length; i++){
+    const p = trail[i], age = i/trail.length;
+    if(Math.random() > age*0.82) continue;
+    const jx = (Math.random()-0.5)*10*(1-age);
+    const jy = (Math.random()-0.5)*10*(1-age);
+    const [px, py] = pix(p.x+jx, p.y+jy);
+    const sz = PIXEL*(0.8+age*1.4);
+    const which = Math.random();
+    ctx.fillStyle = which < 0.5 ? hexAlpha(PINK, age*0.9)
+                  : which < 0.8 ? hexAlpha(PINK2, age*0.75)
+                  : hexAlpha(LILAC, age*0.8);
+    ctx.fillRect(px, py, Math.ceil(sz)-1, Math.ceil(sz)-1);
+    if(age > 0.6 && Math.random() < 0.25){
+      const [ex, ey] = pix(p.x+(Math.random()-0.5)*18, p.y+(Math.random()-0.5)*18);
+      ctx.fillStyle = hexAlpha(LILAC, age*0.35);
+      ctx.fillRect(ex, ey, PIXEL-1, PIXEL-1);
+    }
+  }
+  */
+  requestAnimationFrame(frame);
+}
+
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  mouse.x = e.clientX-r.left; mouse.y = e.clientY-r.top;
+  mouseActive = true;
+  canvas.style.cursor = hoveredSpiral ? 'pointer' : 'default';
+});
+canvas.addEventListener('mouseleave', () => { mouse.x=-999; mouse.y=-999; trail=[]; canvas.style.cursor='default'; });
+canvas.addEventListener('click', () => {
+  if(hoveredSpiral) window.location.href = hoveredSpiral.href;
+});
+
+window.addEventListener('resize', resize);
+resize();
+frame();
+})();
+
+/* — gif spawner — commented out
+(function(){
+const GFX = [
+  'picmix.gif','butterflyegg.gif','butterflylrg.gif','248ee5d2.png','c8cf88ea.png',
+  '1296733zp6m2hotbs.gif','pyramidhead.gif','chand.gif','time.gif','marceline.gif',
+  'WZJZVVWEUENMHHSDTJ4AQOQPYTOBSFYT.gif','26AU4QPV6GPNGIYO24XV5E2KWPHHGGQA.gif',
+  'YZTPC36NHUNO22ZQNHRRULTLNH473KAJ.gif','2IK3YH5T3V5LCP6QTYGKX34TN6XLUGWB.gif',
+  '708725oz7fjx7tp3.gif','1176934fnbulcyxto.gif','3766060m38wajdyoe.gif','1421681d0vznqw1tx.gif'
+].map(f => `/assets/main/lil-gfx/${f}`);
+
+const layer = document.getElementById('gfx-layer');
+const section = document.querySelector('.intro');
+let active = [];
+let lastSpawn = 0;
+let moved = false;
+const MAX = 6;
+const LIFETIME_MIN = 1800;
+const LIFETIME_MAX = 4200;
+const SPAWN_COOLDOWN = 380;
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+function randInt(a, b){ return Math.floor(rand(a, b)); }
+
+function spawn(e){
+  if(active.length >= MAX) {
+    const oldest = active.shift();
+    oldest.remove();
+  }
+  const src = GFX[randInt(0, GFX.length)];
+  const img = document.createElement('img');
+  img.src = src;
+  const size = randInt(24, 56);
+  const ox = rand(-40, 40);
+  const oy = rand(-40, 40);
+  const x = e.clientX + ox - size/2;
+  const y = e.clientY + oy - size/2;
+  img.style.cssText = `position:fixed; left:${x}px; top:${y}px; width:${size}px; transform:rotate(${rand(-18,18)}deg); pointer-events:none; z-index:50; mix-blend-mode:overlay;`;
+  layer.appendChild(img);
+  active.push(img);
+  const lifetime = rand(LIFETIME_MIN, LIFETIME_MAX);
+  setTimeout(() => {
+    img.remove();
+    active = active.filter(i => i !== img);
+  }, lifetime);
+}
+
+document.addEventListener('mousemove', e => {
+  const r = section.getBoundingClientRect();
+  if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+  const now = Date.now();
+  if(now - lastSpawn < SPAWN_COOLDOWN) return;
+  lastSpawn = now;
+  spawn(e);
+});
+})();
+*/
+</script>

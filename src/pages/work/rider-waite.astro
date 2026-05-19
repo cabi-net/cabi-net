@@ -1,0 +1,196 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="rider-waite recoloured">
+  <article class="project-page">
+
+    <header class="project-header">
+      <h1>rider-waite recoloured</h1>
+      <div class="project-meta mono muted">
+        <span>2026</span>
+        <span>scraping / image processing / automation</span>
+        <a href="https://github.com/cabi-net/rider-waite-scrape-and-index" target="_blank" rel="noopener">github ↗</a>
+      </div>
+    </header>
+
+    <section class="project-body">
+
+      <p>
+        A Python script that scrapes all 78 Rider-Waite Tarot card images from
+        Wikimedia Commons and recolours every card using a custom 4-anchor LAB ramp palette — inspired by
+        Krita's Index Colors filter, reimplemented from scratch in Python and applied
+        entirely at runtime.
+      </p>
+
+      <p>
+        The palette is built from four ordered anchors — Shadow, Base, Light, Bright —
+        whose colours and number of intermediate steps the user defines. The script
+        linearly interpolates between each adjacent pair in CIE LAB space, then snaps
+        every pixel to its nearest palette entry by Euclidean LAB distance. Output directories and palette swatches are
+        auto-named from the settings, so every run is reproducible and self-documenting.
+      </p>
+
+      <div class="example">
+
+<div class="code-block">
+          <p class="mono muted label">terminal</p>
+          <pre class="mono"><span class="prompt">$</span> python rider_waite_krita_index.py \
+--shadow 3f32ac --base 76428a --light 5fcde4 --bright ffffff \
+--steps 4 4 4</pre>
+        </div>
+
+        <div class="swatch-row">
+          <div class="swatch-col">
+            <p class="mono muted label">anchor colours</p>
+            <img src="/assets/rider-waite/anchor_swatches.png" alt="anchor swatches" class="palette" />
+          </div>
+          <div class="swatch-col">
+            <p class="mono muted label">generated palette</p>
+            <img src="/assets/rider-waite/palette.png" alt="palette ramp" class="palette" />
+          </div>
+        </div>
+
+        <p class="mono muted label">recoloured cards</p>
+        <div class="card-grid">
+          <figure>
+            <img src="/assets/rider-waite/ace_of_cups-in.png" alt="Ace of Cups — original" />
+            <figcaption class="mono muted">original</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/rider-waite/ace_of_cups-out.png" alt="Ace of Cups — recoloured" />
+            <figcaption class="mono muted">recoloured</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/rider-waite/the_empress-in.png" alt="The Empress — original" />
+            <figcaption class="mono muted">original</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/rider-waite/the_empress-out.png" alt="The Empress — recoloured" />
+            <figcaption class="mono muted">recoloured</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/rider-waite/the_sun-in.png" alt="The Sun — original" />
+            <figcaption class="mono muted">original</figcaption>
+          </figure>
+          <figure>
+            <img src="/assets/rider-waite/the_sun-out.png" alt="The Sun — recoloured" />
+            <figcaption class="mono muted">recoloured</figcaption>
+          </figure>
+        </div>
+
+      </div>
+
+
+      <p class="muted mono status">
+        The generated cards are used in an oracle tarot reader — interactive embed forthcoming.
+      </p>
+
+    </section>
+
+  </article>
+</Base>
+
+<style>
+.project-page { max-width: 720px; }
+
+.project-header { margin-bottom: var(--space-xl); }
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-3xl);
+  font-weight: normal;
+  margin-bottom: var(--space-md);
+}
+
+.project-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+.project-body p {
+  max-width: 65ch;
+  line-height: 1.8;
+}
+
+.project-body p + p { margin-top: var(--space-lg); }
+
+.example {
+  margin: var(--space-xl) 0;
+}
+
+.section-label {
+  font-size: var(--size-xs);
+  margin-bottom: var(--space-lg);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.swatch-row {
+  display: flex;
+  gap: var(--space-xl);
+  margin: var(--space-lg) 0;
+  flex-wrap: wrap;
+}
+
+.swatch-col .label {
+  font-size: var(--size-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.palette {
+  max-width: 280px;
+  image-rendering: pixelated;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg) var(--space-xl);
+  margin: var(--space-xl) 0;
+  max-width: 560px;
+}
+
+.card-grid figure img {
+  width: 100%;
+}
+
+.card-grid figcaption {
+  margin-top: var(--space-xs);
+  font-size: var(--size-xs);
+}
+
+.code-block {
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+.prompt {
+  color: var(--fg-muted);
+  user-select: none;
+}
+
+.code-block .label {
+  font-size: var(--size-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.code-block pre {
+  font-size: var(--size-sm);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-2xl) 0;
+}
+
+.status {
+  margin-top: var(--space-xl);
+  font-size: var(--size-xs);
+}
+</style>

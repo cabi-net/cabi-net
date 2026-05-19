@@ -1,0 +1,134 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// Add your projects here — each becomes a card linking to its own page
+const projects = [
+  {
+    slug: 'corporate-aesthetics',
+    title: 'corporate aesthetics',
+    year: '2026',
+    tags: ['archival', 'automation'],
+    oneliner: 'An automated archive watching the language of institutional AI and data privacy disclosures over time.',
+  },
+  {
+    slug: 'rider-waite',
+    title: 'rider-waite recoloured',
+    year: '2026',
+    tags: ['scraping', 'image processing', 'automation'],
+    oneliner: 'Scraping, indexing, and recolouring the Rider-Waite tarot deck.',
+  },
+  {
+    slug: 'postcard',
+    title: 'postcard',
+    year: '2026',
+    tags: ['p5.js', 'web', 'interactive'],
+    oneliner: 'A digital postcard making and sending website.',
+  },
+  {
+    slug: 'daisy',
+    title: 'daisy',
+    year: '2026',
+    tags: ['p5.js', 'generative', 'interactive'],
+    oneliner: 'A generative p5.js piece built around infinite loops.',
+  },
+  {
+    slug: 'instagram-redux',
+    title: 'instagram redux',
+    year: '2026',
+    tags: ['chrome extension', 'javascript', 'browser'],
+    oneliner: 'A Chrome extension that strips Instagram down to what you actually want.',
+  },
+  {
+    slug: 'collab-site',
+    title: '[untitled]',
+    year: '2026',
+    tags: ['web', 'collaboration'],
+    oneliner: 'In development.',
+    status: 'in development',
+  },
+];
+---
+<Base title="work">
+  <div class="work-index">
+    <img src="/girl-blu.png" alt="" aria-hidden="true" class="girl-blu" />
+    <ul class="project-list">
+      {projects.map(p => (
+        <li>
+          <a href={`/work/${p.slug}`} class="project-row">
+            <span class="project-title">{p.title}</span>
+            <span class="project-tags muted mono">
+              {p.tags.join(' / ')}
+            </span>
+            <span class="project-year muted mono">{p.year}</span>
+            {p.status && <span class="project-status muted mono">[{p.status}]</span>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
+
+<style>
+.work-index {
+  max-width: 900px;
+  position: relative;
+}
+
+.girl-blu {
+  position: fixed;
+  bottom: -40px;
+  right: -30px;
+  height: 420px;
+  width: auto;
+  filter: invert(1) sepia(1) saturate(6) hue-rotate(280deg) brightness(1.1);
+  opacity: 0.28;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+.project-list {
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.project-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: var(--space-lg);
+  align-items: baseline;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border);
+  transition: opacity var(--transition);
+}
+
+.project-row:hover { opacity: 0.6; }
+
+.project-title {
+  font-family: var(--font-display);
+  font-size: var(--size-lg);
+}
+
+.project-tags {
+  font-size: var(--size-xs);
+}
+
+.project-year {
+  font-size: var(--size-xs);
+  text-align: right;
+}
+
+.project-status {
+  font-size: var(--size-xs);
+  grid-column: 1;
+  margin-top: calc(var(--space-xs) * -1);
+  padding-bottom: var(--space-xs);
+}
+
+@media (max-width: 600px) {
+  .project-row {
+    grid-template-columns: 1fr auto;
+  }
+  .project-tags { display: none; }
+}
+</style>

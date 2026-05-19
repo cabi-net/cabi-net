@@ -1,0 +1,99 @@
+/* ─── FONTS ──────────────────────────────────────────────────── */
+@font-face {
+  font-family: 'Peix';
+  src: url('/assets/main/fonts/Peix-Variable/Fonts/Peix.woff2') format('woff2'),
+       url('/assets/main/fonts/Peix-Variable/Fonts/Peix.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+/* ─── TOKENS — edit everything here ─────────────────────────── */
+:root {
+  --bg:         #5c0029;
+  --bg-surface: #7a0037;
+  --fg:         #8ae1fc;
+  --fg-muted:   #c9a0b0;
+  --accent:     #ff9fe5;
+  --border:     #8a1040;
+
+  /* Typography */
+  --font-body:    'Peix', monospace;
+  --font-display: 'Peix', monospace;
+  --font-mono:    'Peix', monospace;
+
+  /* Peix variation tiers */
+  --peix-display: "VOID" 767, "BLCK" 62,  "LONG" 441, "ROND" 695; /* expressive — headings, wordmark, nav */
+  --peix-body:    "VOID" 0,   "BLCK" 0,   "LONG" 0,   "ROND" 200; /* quiet — body text, prose */
+  --peix-tag:     "VOID" 200, "BLCK" 0,   "LONG" 200, "ROND" 400; /* mid — tags, meta, captions */
+
+  --size-xs:  0.75rem;
+  --size-sm:  0.875rem;
+  --size-md:  1rem;
+  --size-lg:  1.25rem;
+  --size-xl:  1.75rem;
+  --size-2xl: 2.5rem;
+  --size-3xl: 4rem;
+
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  2rem;
+  --space-xl:  4rem;
+  --space-2xl: 8rem;
+
+  --radius:    2px;  /* keep low for a precise, non-bubbly feel */
+  --transition: 200ms ease;
+}
+
+/* ─── RESET ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-variation-settings: var(--peix-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-variation-settings: var(--peix-display);
+}
+
+.mono, .muted.mono, figcaption, .project-tags, .project-meta, .project-year, .project-status {
+  font-variation-settings: var(--peix-tag);
+}
+
+body {
+  min-height: 100vh;
+  /* Layout handled per-page — no global container imposed */
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+/* ─── UTILITIES ──────────────────────────────────────────────── */
+.muted   { color: var(--fg-muted); }
+.mono    { font-family: var(--font-mono); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+/* ─── PROSE (writing section) ────────────────────────────────── */
+.prose {
+  max-width: 60ch;
+  line-height: 1.8;
+}
+.prose p + p { margin-top: var(--space-md); }

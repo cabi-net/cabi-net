@@ -1,0 +1,249 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="corporate aesthetics">
+  <article class="project-page">
+
+    <header class="project-header">
+      <h1>corporate aesthetics</h1>
+      <div class="project-meta mono muted">
+        <span>2026</span>
+        <span>archival / automation</span>
+        <a href="https://github.com/cabi-net/corporate-aesthetics" target="_blank" rel="noopener">
+          github ↗
+        </a>
+      </div>
+    </header>
+
+    <section class="project-body">
+      <p>
+        An automated archive that watches the language of institutional AI and
+        data privacy disclosures over time, and makes their changes visible.
+      </p>
+
+      <!-- WHAT IT WATCHES TABLE -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>institution</th>
+              <th>page</th>
+              <th>method</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Google</td>
+              <td><a href="https://support.google.com/assistant/answer/11091015" target="_blank" rel="noopener">How Google Assistant works with your data ↗</a></td>
+              <td class="mono">Playwright</td>
+            </tr>
+            <tr>
+              <td>Meta</td>
+              <td><a href="https://privacycenter.instagram.com/privacy/genai/" target="_blank" rel="noopener">How Meta uses information for generative AI ↗</a></td>
+              <td class="mono">Playwright</td>
+            </tr>
+            <tr>
+              <td>Microsoft</td>
+              <td><a href="https://learn.microsoft.com/en-us/legal/cognitive-services/openai/data-privacy" target="_blank" rel="noopener">Data, privacy, and security for Azure OpenAI ↗</a></td>
+              <td class="mono">Playwright</td>
+            </tr>
+            <tr>
+              <td>OpenAI</td>
+              <td><a href="https://openai.com/policies/data-processing-addendum/" target="_blank" rel="noopener">Data Processing Addendum ↗</a></td>
+              <td class="mono">Wayback Machine</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        A GitHub Actions workflow runs every Monday at 9am UTC. It scrapes each
+        target page, extracts the meaningful text, and commits a dated snapshot
+        to the repository. The repository history is the data structure — there
+        is no database.
+      </p>
+
+      <p>
+        OpenAI's policy pages actively block automated access. Their snapshots
+        are retrieved via the Internet Archive instead — a layer of mediation
+        that is itself part of the record.
+      </p>
+
+      <!-- INFRASTRUCTURE NOTE — keep this, it's the best writing -->
+      <blockquote>
+        This project runs on GitHub, which is owned by Microsoft. Microsoft is
+        one of the four companies whose rhetorical behavior this archive
+        documents. This is not a contradiction to resolve or hide; it is part
+        of the record.
+      </blockquote>
+
+      <!-- ADD: screenshot of repo structure or a snapshot file -->
+      <!-- <img src="/assets/palimpsest-snapshot.png" alt="snapshot file example" /> -->
+
+      <p class="status muted mono">
+        Archiving since March 2026 · weekly snapshots · diff viewer forthcoming
+      </p>
+
+      <hr class="divider" />
+
+      <div class="suggest">
+        <p class="mono muted label">suggest a page to watch</p>
+        <form id="suggest-form">
+          <input type="url" name="url" placeholder="url" required />
+          <input type="text" name="note" placeholder="note (optional)" />
+          <button type="submit" class="mono">send →</button>
+        </form>
+        <p id="suggest-confirm" class="mono muted" style="display:none">noted.</p>
+      </div>
+
+    </section>
+
+  </article>
+</Base>
+
+<script>
+import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/+esm';
+
+emailjs.init('Jh0AufLo_4SD_2v9v');
+
+document.getElementById('suggest-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('button');
+  btn.textContent = '...';
+  btn.disabled = true;
+  try {
+    await emailjs.send('service_olo418m', 'template_8q10j0c', {
+      url:  form.url.value,
+      note: form.note.value,
+    });
+    form.style.display = 'none';
+    document.getElementById('suggest-confirm').style.display = 'block';
+  } catch(err) {
+    btn.textContent = 'send →';
+    btn.disabled = false;
+    console.error(err);
+  }
+});
+</script>
+
+<style>
+.project-page {
+  max-width: 720px;
+}
+
+.project-header {
+  margin-bottom: var(--space-xl);
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--size-3xl);
+  font-weight: normal;
+  margin-bottom: var(--space-md);
+}
+
+
+.project-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+.project-body p + p {
+  margin-top: var(--space-lg);
+}
+
+.project-body p {
+  max-width: 65ch;
+  line-height: 1.8;
+}
+
+.table-wrap {
+  margin: var(--space-xl) 0;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-sm);
+}
+
+th, td {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-family: var(--font-mono);
+  font-size: var(--size-xs);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+blockquote {
+  margin: var(--space-xl) 0;
+  padding-left: var(--space-lg);
+  border-left: 1px solid var(--fg-muted);
+  color: var(--fg-muted);
+  font-size: var(--size-sm);
+  line-height: 1.8;
+  max-width: 55ch;
+}
+
+.status {
+  margin-top: var(--space-xl);
+  font-size: var(--size-xs);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-2xl) 0;
+}
+
+.suggest { max-width: 65ch; }
+
+.suggest .label {
+  font-size: var(--size-xs);
+  margin-bottom: var(--space-md);
+}
+
+.suggest form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.suggest input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--size-sm);
+  padding: var(--space-sm) var(--space-md);
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.suggest input:focus { border-color: var(--fg-muted); }
+
+.suggest input::placeholder { color: var(--fg-muted); }
+
+.suggest button {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--size-sm);
+  cursor: pointer;
+  padding: var(--space-sm) 0;
+  transition: color 200ms ease;
+}
+
+.suggest button:hover { color: var(--accent); }
+</style>

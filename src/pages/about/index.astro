@@ -1,0 +1,114 @@
+---
+import Base from '../../layouts/Base.astro';
+---
+<Base title="about">
+  <div class="about-page">
+
+    <section class="bio">
+      <img class="frame-img" src="/assets/main/vine.png" alt="" aria-hidden="true" />
+      <div class="bio-text">
+        <p>
+          My work sits at the intersection of art and technology — I enjoy building
+          systems, tools, and images that stem from curiosity.
+        </p>
+        <p>
+          I believe in automation as a means for creative freedom: scripting the
+          repetitive to make space for the things I love doing and making. I'm drawn
+          to projects that are novel, strange, or useful — preferably all three, and
+          ideally recursive.
+        </p>
+
+        <!-- DIAGRAM PLACEHOLDER -->
+
+      </div>
+    </section>
+
+    <section class="links mono">
+      <a href="https://cabi-net.github.io/cv-website" target="_blank" rel="noopener">cv ↗</a>
+      <a href="https://github.com/cabi-net" target="_blank" rel="noopener">github ↗</a>
+    </section>
+
+    <section class="colophon mono muted">
+      <p class="colophon-label">colophon</p>
+      <ul>
+        <li>typeset in <a href="https://www.entravaux.fr" target="_blank" rel="noopener">Peix Variable</a> by En Travaux</li>
+        <li>classical engravings — public domain</li>
+        <li>Rider-Waite Tarot — Pamela Colman Smith, 1909, public domain</li>
+        <li>built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a></li>
+      </ul>
+    </section>
+
+  </div>
+</Base>
+
+<style>
+.about-page {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.bio {
+  position: relative;
+  padding-left: 120px;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+.frame-img {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(100% + 2rem);
+  width: auto;
+  opacity: 0.45;
+  filter: invert(1) sepia(1) saturate(2) hue-rotate(280deg) brightness(0.85);
+  pointer-events: none;
+}
+
+.bio-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.bio p {
+  font-size: var(--size-lg);
+  line-height: 1.8;
+  max-width: 52ch;
+}
+
+.links {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-sm);
+}
+
+.colophon {
+  font-size: var(--size-xs);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-lg);
+}
+
+.colophon-label {
+  margin-bottom: var(--space-sm);
+  color: var(--fg-muted);
+}
+
+.colophon ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.colophon a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+</style>
