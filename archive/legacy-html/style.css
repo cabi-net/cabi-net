@@ -1,0 +1,158 @@
+﻿/* Fonts */
+@font-face {
+  font-family: "Univers";
+  src: url("fonts/univers/UniversRegular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Univers";
+  src: url("fonts/univers/UniversLight.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Univers";
+  src: url("fonts/univers/UniversBold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Univers Condensed";
+  src: url("fonts/univers/UniversCnRg.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Univers Condensed";
+  src: url("fonts/univers/UniversCnBold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Global layout */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  position: relative;
+  min-height: 100%;
+  font-family: "Univers", sans-serif;
+  color: black;
+}
+
+body.home-page {
+  background: #8a9a5b;
+}
+
+body.pd-page {
+  background: #8a9a5b;
+}
+
+body.pd-page main.pd-page {
+  width: 60%;
+  margin: 5% auto;
+}
+
+/* Headings */
+h1, h2, h3 {
+  font-weight: 300;
+  font-size: 1.4rem;
+}
+
+/* Content list links */
+.content-list a {
+  color: black;
+
+  /* Option A: thin dotted */
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1px;
+
+  /* Option B: thin solid, offset
+  text-decoration-style: solid;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px; */
+
+  /* Option C: dashed
+  text-decoration-style: dashed;
+  text-decoration-thickness: 1px; */
+
+  /* Option D: no underline, appears on hover
+  text-decoration: none; */
+}
+
+/* Option D hover rule (only needed for Option D)
+.content-list a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+} */
+
+.content-list a:hover {
+  text-shadow: 0 0 8px rgba(255, 240, 180, 0.9), 0 0 20px rgba(255, 220, 120, 0.5);
+}
+
+ul {
+  list-style-type: '\1619';
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+ul li {
+  padding-left: 0.5rem;
+}
+
+main.home {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.7);
+  transform-origin: center center;
+}
+
+.portal {
+  position: absolute;
+  width: 180px;
+  cursor: pointer;
+}
+
+.portal img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.p-d img {
+  content: url("asset/p-d-logo-before.png");
+}
+
+.p-d:hover img {
+  content: url("asset/p-d-logo-hover.png");
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  top: -91px;
+  left: -9px;
+}
+
+.logo img {
+  width: 322px;
+  height: auto;
+  display: block;
+}

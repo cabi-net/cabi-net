@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>write your own art</title>
+  <style>
+    @font-face {
+      font-family: 'Interlope';
+      src: url('assets/interlope-main/font/web/Interlope-Regular.woff2') format('woff2'),
+           url('assets/interlope-main/font/web/Interlope-Regular.woff') format('woff');
+    }
+
+    @font-face {
+      font-family: 'Avara';
+      src: url('assets/Avara-master/fonts/webfonts/Bold/Avara-Bold.woff2') format('woff2'),
+           url('assets/Avara-master/fonts/webfonts/Bold/Avara-Bold.woff') format('woff');
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    button {
+      font-family: 'Avara', sans-serif;
+    }
+
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: #000;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Avara', sans-serif;
+    }
+
+    .grape-border {
+      position: fixed;
+      top: 0;
+      width: 80px;
+      height: 100vh;
+      background-image: url('gfx/grape-white.png');
+      background-repeat: repeat-y;
+      background-size: 80px auto;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .grape-border.left  { left: 0; }
+    .grape-border.right { right: 0; }
+
+    #canvas-container {
+      width: 480px;
+      height: 480px;
+    }
+
+    #controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    #userInput {
+      font-family: 'Interlope', sans-serif;
+      font-size: 26px;
+      width: 480px;
+      padding: 12px 16px;
+      background: transparent;
+      color: #666;
+      border: none;
+      border-bottom: 1px solid #333;
+      text-align: center;
+      outline: none;
+      resize: none;
+      overflow: hidden;
+      line-height: 1.3;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    #userInput:focus {
+      color: #fff;
+      border-color: #666;
+    }
+
+    #userInput::placeholder {
+      color: #444;
+    }
+
+    #charCounter {
+      font-size: 10px;
+      color: #333;
+      width: 480px;
+      text-align: right;
+      transition: color 0.3s;
+    }
+
+    #charCounter.near-limit {
+      color: #888;
+    }
+
+    #flavourSelect {
+      font-size: 13px;
+      padding: 4px 8px;
+      background: transparent;
+      color: #444;
+      border: 1px solid #333;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+
+    #flavourSelect:hover {
+      opacity: 1;
+    }
+
+    #postcard-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #button-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    #sendPostcard {
+      font-size: 13px;
+      padding: 6px 16px;
+      background: #fff;
+      color: #000;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+    }
+
+    #sendPostcard:hover {
+      opacity: 1;
+    }
+
+    #resetBtn {
+      font-size: 11px;
+      padding: 5px 12px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    #resetBtn:hover {
+      opacity: 0.85;
+    }
+
+    #postcard-options {
+      display: flex;
+      gap: 8px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.35s ease, opacity 0.35s ease;
+    }
+
+    #postcard-options.open {
+      max-height: 50px;
+      opacity: 1;
+    }
+
+    .postcard-option {
+      font-size: 12px;
+      padding: 5px 12px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #ffffff44;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .postcard-option:hover {
+      color: #fff;
+      border-color: #fff;
+    }
+
+    #sender-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+
+    #sender-form.open {
+      max-height: 50px;
+      opacity: 1;
+    }
+
+    #senderName {
+      font-family: 'Avara', sans-serif;
+      font-size: 12px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-bottom: 1px solid #555;
+      outline: none;
+      padding: 4px 6px;
+      width: 160px;
+    }
+
+    #senderName::placeholder { color: #666; }
+
+    #recipientEmail {
+      font-family: 'Avara', sans-serif;
+      font-size: 12px;
+      background: transparent;
+      color: #fff;
+      border: none;
+      border-bottom: 1px solid #555;
+      outline: none;
+      padding: 4px 6px;
+      width: 180px;
+      display: none;
+    }
+
+    #recipientEmail::placeholder { color: #666; }
+
+    #confirmSendBtn {
+      font-size: 11px;
+      padding: 4px 10px;
+      background: transparent;
+      color: #fff;
+      border: 1px solid #ffffff44;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    #confirmSendBtn:hover { opacity: 1; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="../lib/p5.js"></script>
+  <script src="../lib/p5.sound.js"></script>
+  <script src="palettes.js"></script>
+  <script src="sketch.js"></script>
+
+</head>
+
+<body>
+  <div class="grape-border left"></div>
+  <div class="grape-border right"></div>
+  <div id="canvas-container">
+    <!-- p5.js canvas will be attached here -->
+  </div>
+  <div id="controls">
+    <textarea id="userInput" placeholder="start typing..." rows="1" maxlength="120"></textarea>
+    <span id="charCounter">0 / 120</span>
+    <div id="postcard-area">
+      <div id="button-row">
+        <button id="sendPostcard">send postcard</button>
+        <button id="resetBtn">reset</button>
+      </div>
+      <div id="postcard-options">
+        <button class="postcard-option" id="toMeBtn">to me</button>
+        <button class="postcard-option" id="toYourselfBtn">to yourself</button>
+        <button class="postcard-option" id="toSomeoneBtn">to someone else</button>
+      </div>
+      <div id="sender-form">
+        <input type="text" id="senderName" placeholder="your name" maxlength="60" />
+        <input type="email" id="recipientEmail" placeholder="email" />
+        <button id="confirmSendBtn">send ✓</button>
+        <span id="sendStatus" style="font-size:11px;color:#888;opacity:0;transition:opacity 0.3s;"></span>
+      </div>
+    </div>
+    <select id="flavourSelect" style="display: none;">
+      <option value="original">Original</option>
+      <option value="periwink">Periwink</option>
+      <option value="minimal">Minimal</option>
+      <option value="classic" selected>Classic</option>
+    </select>
+  </div>
+  <script>
+    const userInput = document.getElementById('userInput');
+    const charCounter = document.getElementById('charCounter');
+    userInput.value = '';
+    userInput.addEventListener('input', () => {
+      userInput.style.height = 'auto';
+      userInput.style.height = userInput.scrollHeight + 'px';
+      charCounter.textContent = `${userInput.value.length} / 120`;
+      charCounter.classList.toggle('near-limit', userInput.value.length >= 100);
+    });
+
+    function doReset() {
+      userInput.value = '';
+      userInput.style.height = 'auto';
+      charCounter.textContent = '0 / 120';
+      charCounter.classList.remove('near-limit');
+      postcardState = 'front';
+      frontImg = null;
+      frontImgData = null;
+      backImgData = null;
+      document.getElementById('sender-form').classList.remove('open');
+      document.getElementById('senderName').value = '';
+      document.getElementById('recipientEmail').value = '';
+      document.getElementById('recipientEmail').style.display = 'none';
+      options.classList.remove('open');
+      background(0);
+    }
+    const resetBtn = document.getElementById('resetBtn');
+    resetBtn.addEventListener('click', doReset);
+    resetBtn.addEventListener('touchend', (e) => { e.preventDefault(); doReset(); });
+
+    const sendBtn = document.getElementById('sendPostcard');
+    const options = document.getElementById('postcard-options');
+
+    sendBtn.addEventListener('click', () => {
+      startFlip();
+      options.classList.add('open');
+    });
+
+    document.querySelectorAll('.postcard-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        options.classList.remove('open');
+      });
+    });
+
+    const EMAILJS_PUBLIC_KEY  = 'Jh0AufLo_4SD_2v9v';
+    const EMAILJS_SERVICE_ID  = 'service_olo418m';
+    const EMAILJS_TEMPLATE_ID = 'template_8q10j0c';
+    const RECIPIENT_EMAIL     = 'world0princess@proton.me';
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    let sendTarget = 'me'; // 'me' | 'yourself' | 'someone'
+
+    function openSenderForm(target) {
+      sendTarget = target;
+      const emailField = document.getElementById('recipientEmail');
+      emailField.style.display = (target === 'me') ? 'none' : 'block';
+      emailField.placeholder = (target === 'yourself') ? 'your email' : 'their email';
+      document.getElementById('sender-form').classList.add('open');
+      document.getElementById('senderName').focus();
+    }
+
+    const toMeBtn = document.getElementById('toMeBtn');
+    toMeBtn.addEventListener('click', () => openSenderForm('me'));
+    toMeBtn.addEventListener('touchend', (e) => { e.preventDefault(); openSenderForm('me'); });
+
+    const toYourselfBtn = document.getElementById('toYourselfBtn');
+    toYourselfBtn.addEventListener('click', () => openSenderForm('yourself'));
+    toYourselfBtn.addEventListener('touchend', (e) => { e.preventDefault(); openSenderForm('yourself'); });
+
+    const toSomeoneBtn = document.getElementById('toSomeoneBtn');
+    toSomeoneBtn.addEventListener('click', () => openSenderForm('someone'));
+    toSomeoneBtn.addEventListener('touchend', (e) => { e.preventDefault(); openSenderForm('someone'); });
+
+    const IMGBB_API_KEY = '2ac518d35e9bb3b2bf9196110ad1b765';
+
+    function uploadToImgbb(dataUrl) {
+      const base64 = dataUrl.split(',')[1];
+      const body = new FormData();
+      body.append('key', IMGBB_API_KEY);
+      body.append('image', base64);
+      body.append('expiration', 604800); // 7 days
+      return fetch('https://api.imgbb.com/1/upload', { method: 'POST', body })
+        .then(r => r.json())
+        .then(json => json.data.url);
+    }
+
+    function showSendStatus(msg, color = '#888') {
+      const el = document.getElementById('sendStatus');
+      el.textContent = msg;
+      el.style.color = color;
+      el.style.opacity = '1';
+      setTimeout(() => { el.style.opacity = '0'; }, 3000);
+    }
+
+    async function doSend() {
+      const name = document.getElementById('senderName').value.trim() || 'someone';
+      const toEmail = sendTarget === 'me'
+        ? RECIPIENT_EMAIL
+        : document.getElementById('recipientEmail').value.trim();
+      if (!toEmail) { showSendStatus('enter an email first', '#888'); return; }
+      document.getElementById('sender-form').classList.remove('open');
+      document.getElementById('confirmSendBtn').disabled = true;
+      showSendStatus('sending…', '#888');
+      try {
+        const [frontUrl, backUrl] = await Promise.all([
+          uploadToImgbb(frontImgData),
+          uploadToImgbb(backImgData),
+        ]);
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          from_name:  name,
+          to_email:   toEmail,
+          front_url:  frontUrl,
+          back_url:   backUrl,
+        });
+        showSendStatus('sent ✓', '#aaa');
+        document.getElementById('senderName').value = '';
+        document.getElementById('recipientEmail').value = '';
+      } catch (err) {
+        console.error('send failed:', err);
+        showSendStatus('send failed — try again', '#c0392b');
+        document.getElementById('sender-form').classList.add('open');
+      } finally {
+        document.getElementById('confirmSendBtn').disabled = false;
+      }
+    }
+    const confirmSendBtn = document.getElementById('confirmSendBtn');
+    confirmSendBtn.addEventListener('click', doSend);
+    confirmSendBtn.addEventListener('touchend', (e) => { e.preventDefault(); doSend(); });
+  </script>
+</body>
+
+</html>

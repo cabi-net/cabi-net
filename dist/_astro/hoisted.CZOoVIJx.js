@@ -1,0 +1,8 @@
+import"./hoisted.DDEwbm2k.js";const E="syllabus-pqawpwm96ww",p=document.getElementById("daisy-loading"),s=document.getElementById("cards"),r=document.getElementById("syllabus-daisy"),t=r.getContext("2d"),g=r.width,y=r.height,u=g/2,v=y/2,d=10,x=8,I=1e3/x;let f=0,o=0,c;function w(n){n-f>=I&&(o=(o+1)%d,f=n),t.clearRect(0,0,g,y);for(let a=0;a<d;a++){const e=Math.PI*2/d*a;t.save(),t.translate(u,v),t.rotate(e),t.beginPath(),t.ellipse(18,0,10,6,0,0,Math.PI*2),t.fillStyle=a===o?"rgba(232,225,252,1)":"rgba(200,180,220,0.35)",t.fill(),t.restore()}t.beginPath(),t.arc(u,v,9,0,Math.PI*2),t.fillStyle="#ff9fe5",t.fill(),c=requestAnimationFrame(w)}c=requestAnimationFrame(w);fetch(`https://api.are.na/v2/channels/${E}?per=100`).then(n=>n.json()).then(n=>{cancelAnimationFrame(c),p.classList.add("hidden");const a=(n.contents||[]).filter(e=>e.class!=="Channel");a.forEach(e=>{const i=e.source?.url||e.attachment?.url||"",h=i?new URL(i).hostname.replace("www.",""):"",L=e.title||"untitled",m=e.description||"",l=document.createElement("div");l.className="card";const $=String(a.indexOf(e)+1).padStart(2,"0");l.innerHTML=`
+          <div class="card-index">[${$}]</div>
+          <div class="card-content">
+            <div class="card-title"><a href="${i}" target="_blank" rel="noopener">${L}</a></div>
+            ${h?`<div class="card-source">${h}</div>`:""}
+            ${m?`<div class="card-annotation">— ${m}</div>`:""}
+          </div>
+        `,s.appendChild(l)}),s.classList.remove("hidden")}).catch(()=>{cancelAnimationFrame(c),p.classList.add("hidden"),s.innerHTML='<p class="muted mono">could not load syllabus.</p>',s.classList.remove("hidden")});

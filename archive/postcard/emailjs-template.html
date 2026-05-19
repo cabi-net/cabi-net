@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+  EmailJS template body — paste the contents of <body> into the EmailJS template HTML editor.
+  Subject: you have received a postcard from {{from_name}}
+
+  Template variables used:
+    {{from_name}}  — sender's name
+    {{front_url}}  — imgbb URL of front (art) side
+    {{back_url}}   — imgbb URL of back (text) side
+
+  Grape border image (permanent, no expiry):
+    https://i.ibb.co/60sPqyKm/grape-white.png
+-->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+    }
+  </style>
+</head>
+<body style="background:#000;margin:0;padding:0;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#000;">
+    <tr>
+      <td align="center" style="padding:40px 0;">
+
+        <table cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+          <tr>
+
+            <!-- left grape border -->
+            <td width="60" valign="top" style="background-image:url('https://i.ibb.co/60sPqyKm/grape-white.png');background-repeat:repeat-y;background-size:60px auto;opacity:0.85;"></td>
+
+            <!-- main content -->
+            <td style="padding:30px 20px;text-align:center;background:#000;">
+
+              <!-- header -->
+              <p style="font-family:'Playfair Display',Georgia,serif;font-size:13px;color:#555;letter-spacing:0.08em;margin:0 0 24px 0;">
+                you have received a postcard from <span style="color:#fff;">{{from_name}}</span>
+              </p>
+
+              <!-- front image -->
+              <img src="{{front_url}}" width="400" alt="postcard front"
+                style="display:block;margin:0 auto 12px auto;border:none;max-width:100%;" />
+
+              <!-- back image -->
+              <img src="{{back_url}}" width="400" alt="postcard back"
+                style="display:block;margin:0 auto 32px auto;border:none;max-width:100%;" />
+
+              <!-- respond button -->
+              <a href="https://YOUR-SITE-URL-HERE"
+                style="font-family:'Playfair Display',Georgia,serif;font-size:13px;color:#fff;text-decoration:none;border:1px solid #fff;border-radius:4px;padding:7px 18px;opacity:0.85;">
+                respond with a postcard
+              </a>
+
+            </td>
+
+            <!-- right grape border -->
+            <td width="60" valign="top" style="background-image:url('https://i.ibb.co/60sPqyKm/grape-white.png');background-repeat:repeat-y;background-size:60px auto;opacity:0.85;"></td>
+
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
