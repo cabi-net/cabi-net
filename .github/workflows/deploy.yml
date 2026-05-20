@@ -28,7 +28,7 @@ jobs:
         with:
           path: ./dist
 
-  deploy:
+  deploy-pages:
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -37,3 +37,19 @@ jobs:
     steps:
       - uses: actions/deploy-pages@v4
         id: deployment
+
+  deploy-neocities:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+      - uses: bcomnes/deploy-to-neocities@v3
+        with:
+          api_token: ${{ secrets.NEOCITIES_API_KEY }}
+          dist_dir: dist
+          cleanup: true
