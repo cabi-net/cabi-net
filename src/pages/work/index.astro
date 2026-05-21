@@ -17,7 +17,8 @@ const projects = [
     oneliner: 'Scraping, indexing, and recolouring the Rider-Waite tarot deck.',
   },
   {
-    slug: 'postcard',
+    slug: null,
+    href: 'https://postc4rd.neocities.org/',
     title: 'postcard',
     year: '2026',
     tags: ['p5.js', 'web', 'interactive'],
@@ -57,7 +58,7 @@ const projects = [
       <ul class="project-list">
         {projects.map(p => (
           <li>
-            <a href={`/work/${p.slug}`} class="project-row">
+            <a href={p.href ?? `/work/${p.slug}`} class="project-row" target={p.href ? '_blank' : undefined} rel={p.href ? 'noopener' : undefined}>
               <span class="project-title">{p.title}</span>
               <span class="project-tags muted mono">
                 {p.tags.join(' / ')}
@@ -177,12 +178,12 @@ const projects = [
 
 <script>
 const PROJECTS = [
-  { slug: 'corporate-aesthetics', title: 'corporate aesthetics' },
-  { slug: 'rider-waite',          title: 'rider-waite recoloured' },
-  { slug: 'postcard',             title: 'postcard' },
-  { slug: 'daisy',                title: 'daisy' },
-  { slug: 'instagram-redux',      title: 'instagram redux' },
-  { slug: 'collab-site',          title: '[untitled]' },
+  { href: '/work/corporate-aesthetics',      title: 'corporate aesthetics' },
+  { href: '/work/rider-waite',               title: 'rider-waite recoloured' },
+  { href: 'https://postc4rd.neocities.org/', title: 'postcard' },
+  { href: '/work/daisy',                     title: 'daisy' },
+  { href: '/work/instagram-redux',           title: 'instagram redux' },
+  { href: '/work/collab-site',               title: '[untitled]' },
 ];
 
 const PINK   = '#ff9fe5';
@@ -358,7 +359,9 @@ canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; 
 
 canvas.addEventListener('click', () => {
   if (hoveredIdx >= 0) {
-    window.location.href = `/work/${PROJECTS[hoveredIdx].slug}`;
+    const target = PROJECTS[hoveredIdx].href;
+    if (target.startsWith('http')) window.open(target, '_blank', 'noopener');
+    else window.location.href = target;
   }
 });
 
