@@ -170,6 +170,9 @@ const projects = [
 
 .hidden { display: none !important; }
 
+:global(body.star-active footer),
+:global(body.star-active main) { display: none !important; }
+
 @media (max-width: 600px) {
   .project-row {
     grid-template-columns: 1fr auto;
@@ -353,6 +356,7 @@ function startStarView() {
   starView!.classList.remove('hidden');
   starView!.classList.add('active');
   listView!.classList.add('hidden');
+  document.body.classList.add('star-active');
   toggle!.textContent = '≡';
   resize();
   rafId = requestAnimationFrame(frame);
@@ -363,6 +367,7 @@ function stopStarView() {
   starView!.classList.add('hidden');
   starView!.classList.remove('active');
   listView!.classList.remove('hidden');
+  document.body.classList.remove('star-active');
   toggle!.textContent = '≋';
 }
 
