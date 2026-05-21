@@ -172,6 +172,13 @@ import '../../styles/global.css';
          url('/assets/postcard/fonts/Interlope-Regular.ttf') format('truetype');
   }
 
+  @font-face {
+    font-family: 'Avara';
+    src: url('/assets/postcard/fonts/Avara-Bold.woff2') format('woff2'),
+         url('/assets/postcard/fonts/Avara-Bold.ttf') format('truetype');
+    font-weight: bold;
+  }
+
   * { box-sizing: border-box; }
 
   html, body {
@@ -265,7 +272,8 @@ import '../../styles/global.css';
   #button-row { display: flex; gap: 10px; }
 
   button {
-    font-family: 'Interlope', sans-serif;
+    font-family: 'Avara', sans-serif;
+    font-weight: bold;
   }
 
   #sendPostcard {
