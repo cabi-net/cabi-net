@@ -153,17 +153,19 @@ const projects = [
 
 #star-view {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: 1;
+  pointer-events: none;
+}
+
+#star-view.active {
+  pointer-events: auto;
 }
 
 #star-canvas {
   display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  left: 0;
 }
 
 .hidden { display: none !important; }
@@ -332,10 +334,16 @@ function frame() {
   rafId = requestAnimationFrame(frame);
 }
 
+let headerH = 0;
+
 function resize() {
   dpr = window.devicePixelRatio || 1;
-  W = canvas.offsetWidth;
-  H = canvas.offsetHeight;
+  const header = document.querySelector('header');
+  headerH = header ? header.getBoundingClientRect().height : 0;
+  canvas.style.top = headerH + 'px';
+  canvas.style.position = 'absolute';
+  W = window.innerWidth;
+  H = window.innerHeight - headerH;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -343,6 +351,7 @@ function resize() {
 
 function startStarView() {
   starView!.classList.remove('hidden');
+  starView!.classList.add('active');
   listView!.classList.add('hidden');
   toggle!.textContent = '≡';
   resize();
@@ -352,6 +361,7 @@ function startStarView() {
 function stopStarView() {
   cancelAnimationFrame(rafId);
   starView!.classList.add('hidden');
+  starView!.classList.remove('active');
   listView!.classList.remove('hidden');
   toggle!.textContent = '≋';
 }
