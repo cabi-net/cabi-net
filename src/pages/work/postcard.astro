@@ -1,80 +1,363 @@
 ---
-import Base from '../../layouts/Base.astro';
+import '../../styles/global.css';
 ---
-<Base title="postcard">
-  <article class="project-page">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>postcard — cabi-net</title>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/addons/p5.sound.min.js"></script>
+  <script is:inline src="/assets/postcard/palettes.js"></script>
+  <script is:inline src="/assets/postcard/sketch.js"></script>
+</head>
+<body>
+  <a href="/work" class="back mono">← work</a>
 
-    <header class="project-header">
-      <h1>postcard</h1>
-      <div class="project-meta mono muted">
-        <span>2025</span>
-        <span>p5.js / web / interactive</span>
+  <div class="grape-border left"></div>
+  <div class="grape-border right"></div>
+
+  <div id="canvas-container"></div>
+
+  <div id="controls">
+    <textarea id="userInput" placeholder="start typing..." rows="1" maxlength="120"></textarea>
+    <span id="charCounter">0 / 120</span>
+    <div id="postcard-area">
+      <div id="button-row">
+        <button id="sendPostcard">send postcard</button>
+        <button id="resetBtn">reset</button>
       </div>
-    </header>
-
-    <section class="project-body">
-      <div class="grape-wrap">
-        <div class="grape" role="img" aria-label="grape"></div>
-        <a href="https://cabi-net.github.io/postcard" target="_blank" rel="noopener" class="cta">open postcard ↗</a>
+      <div id="postcard-options">
+        <button class="postcard-option" id="toMeBtn">to me</button>
+        <button class="postcard-option" id="toYourselfBtn">to yourself</button>
+        <button class="postcard-option" id="toSomeoneBtn">to someone else</button>
       </div>
-    </section>
+      <div id="sender-form">
+        <input type="text" id="senderName" placeholder="your name" maxlength="60" />
+        <input type="email" id="recipientEmail" placeholder="email" />
+        <button id="confirmSendBtn">send ✓</button>
+        <span id="sendStatus" style="font-size:11px;color:#888;opacity:0;transition:opacity 0.3s;"></span>
+      </div>
+    </div>
+    <select id="flavourSelect" style="display:none;">
+      <option value="original">Original</option>
+      <option value="periwink">Periwink</option>
+      <option value="minimal">Minimal</option>
+      <option value="classic" selected>Classic</option>
+    </select>
+  </div>
 
-  </article>
-</Base>
+  <script>
+    const userInput = document.getElementById('userInput');
+    const charCounter = document.getElementById('charCounter');
+    userInput.value = '';
+    userInput.addEventListener('input', () => {
+      userInput.style.height = 'auto';
+      userInput.style.height = userInput.scrollHeight + 'px';
+      charCounter.textContent = `${userInput.value.length} / 120`;
+      charCounter.classList.toggle('near-limit', userInput.value.length >= 100);
+    });
+
+    function doReset() {
+      userInput.value = '';
+      userInput.style.height = 'auto';
+      charCounter.textContent = '0 / 120';
+      charCounter.classList.remove('near-limit');
+      postcardState = 'front';
+      frontImg = null;
+      frontImgData = null;
+      backImgData = null;
+      document.getElementById('sender-form').classList.remove('open');
+      document.getElementById('senderName').value = '';
+      document.getElementById('recipientEmail').value = '';
+      document.getElementById('recipientEmail').style.display = 'none';
+      options.classList.remove('open');
+      background(0);
+    }
+    const resetBtn = document.getElementById('resetBtn');
+    resetBtn.addEventListener('click', doReset);
+    resetBtn.addEventListener('touchend', (e) => { e.preventDefault(); doReset(); });
+
+    const sendBtn = document.getElementById('sendPostcard');
+    const options = document.getElementById('postcard-options');
+    sendBtn.addEventListener('click', () => { startFlip(); options.classList.add('open'); });
+
+    document.querySelectorAll('.postcard-option').forEach(btn => {
+      btn.addEventListener('click', () => { options.classList.remove('open'); });
+    });
+
+    const EMAILJS_PUBLIC_KEY  = 'Jh0AufLo_4SD_2v9v';
+    const EMAILJS_SERVICE_ID  = 'service_olo418m';
+    const EMAILJS_TEMPLATE_ID = 'template_8q10j0c';
+    const RECIPIENT_EMAIL     = 'world0princess@proton.me';
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    let sendTarget = 'me';
+
+    function openSenderForm(target) {
+      sendTarget = target;
+      const emailField = document.getElementById('recipientEmail');
+      emailField.style.display = (target === 'me') ? 'none' : 'block';
+      emailField.placeholder = (target === 'yourself') ? 'your email' : 'their email';
+      document.getElementById('sender-form').classList.add('open');
+      document.getElementById('senderName').focus();
+    }
+
+    document.getElementById('toMeBtn').addEventListener('click', () => openSenderForm('me'));
+    document.getElementById('toYourselfBtn').addEventListener('click', () => openSenderForm('yourself'));
+    document.getElementById('toSomeoneBtn').addEventListener('click', () => openSenderForm('someone'));
+
+    const IMGBB_API_KEY = '2ac518d35e9bb3b2bf9196110ad1b765';
+
+    function uploadToImgbb(dataUrl) {
+      const base64 = dataUrl.split(',')[1];
+      const body = new FormData();
+      body.append('key', IMGBB_API_KEY);
+      body.append('image', base64);
+      body.append('expiration', 604800);
+      return fetch('https://api.imgbb.com/1/upload', { method: 'POST', body })
+        .then(r => r.json())
+        .then(json => json.data.url);
+    }
+
+    function showSendStatus(msg, color = '#888') {
+      const el = document.getElementById('sendStatus');
+      el.textContent = msg;
+      el.style.color = color;
+      el.style.opacity = '1';
+      setTimeout(() => { el.style.opacity = '0'; }, 3000);
+    }
+
+    async function doSend() {
+      const name = document.getElementById('senderName').value.trim() || 'someone';
+      const toEmail = sendTarget === 'me'
+        ? RECIPIENT_EMAIL
+        : document.getElementById('recipientEmail').value.trim();
+      if (!toEmail) { showSendStatus('enter an email first', '#888'); return; }
+      document.getElementById('sender-form').classList.remove('open');
+      document.getElementById('confirmSendBtn').disabled = true;
+      showSendStatus('sending…', '#888');
+      try {
+        const [frontUrl, backUrl] = await Promise.all([
+          uploadToImgbb(frontImgData),
+          uploadToImgbb(backImgData),
+        ]);
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          from_name: name,
+          to_email:  toEmail,
+          front_url: frontUrl,
+          back_url:  backUrl,
+        });
+        showSendStatus('sent ✓', '#aaa');
+        document.getElementById('senderName').value = '';
+        document.getElementById('recipientEmail').value = '';
+      } catch (err) {
+        showSendStatus('send failed — try again', '#c0392b');
+        document.getElementById('sender-form').classList.add('open');
+      } finally {
+        document.getElementById('confirmSendBtn').disabled = false;
+      }
+    }
+    document.getElementById('confirmSendBtn').addEventListener('click', doSend);
+  </script>
+</body>
+</html>
 
 <style>
-.project-page { max-width: 900px; }
+  @font-face {
+    font-family: 'Interlope';
+    src: url('/assets/postcard/fonts/Interlope-Regular.woff2') format('woff2'),
+         url('/assets/postcard/fonts/Interlope-Regular.ttf') format('truetype');
+  }
 
-.project-header { margin-bottom: var(--space-xl); }
+  * { box-sizing: border-box; }
 
-h1 {
-  font-family: var(--font-display);
-  font-size: var(--size-3xl);
-  font-weight: normal;
-  margin-bottom: var(--space-md);
-}
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Interlope', sans-serif;
+  }
 
-.project-meta {
-  display: flex;
-  gap: var(--space-lg);
-  font-size: var(--size-xs);
-}
+  .back {
+    position: fixed;
+    top: 1.5rem;
+    left: 1.5rem;
+    z-index: 10;
+    font-size: 0.75rem;
+    color: rgba(232, 232, 232, 0.5);
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
 
-.grape-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  .back:hover { color: rgba(232, 232, 232, 1); }
 
-.grape {
-  height: 300px;
-  width: 300px;
-  background-color: var(--accent);
-  mask-image: url('/assets/main/grape-white.png');
-  -webkit-mask-image: url('/assets/main/grape-white.png');
-  mask-size: contain;
-  -webkit-mask-size: contain;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-position: center;
-  -webkit-mask-position: center;
-  display: block;
-}
+  .grape-border {
+    position: fixed;
+    top: 0;
+    width: 80px;
+    height: 100vh;
+    background-image: url('/assets/postcard/gfx/grape-white.png');
+    background-repeat: repeat-y;
+    background-size: 80px auto;
+    opacity: 0.85;
+    pointer-events: none;
+  }
 
-.cta {
-  position: absolute;
-  font-family: var(--font-display);
-  font-variation-settings: var(--peix-display);
-  font-size: var(--size-2xl);
-  color: var(--fg);
-  text-decoration: none;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 0, 0, 0.4);
-  transition: color 200ms ease;
-}
+  .grape-border.left  { left: 0; }
+  .grape-border.right { right: 0; }
 
-.cta:hover {
-  color: var(--accent);
-  opacity: 1;
-}
+  #canvas-container { width: 480px; height: 480px; }
+
+  #controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  #userInput {
+    font-family: 'Interlope', sans-serif;
+    font-size: 26px;
+    width: 480px;
+    padding: 12px 16px;
+    background: transparent;
+    color: #666;
+    border: none;
+    border-bottom: 1px solid #333;
+    text-align: center;
+    outline: none;
+    resize: none;
+    overflow: hidden;
+    line-height: 1.3;
+    transition: color 0.3s, border-color 0.3s;
+  }
+
+  #userInput:focus { color: #fff; border-color: #666; }
+  #userInput::placeholder { color: #444; }
+
+  #charCounter {
+    font-size: 10px;
+    color: #333;
+    width: 480px;
+    text-align: right;
+    transition: color 0.3s;
+  }
+
+  #charCounter.near-limit { color: #888; }
+
+  #postcard-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #button-row { display: flex; gap: 10px; }
+
+  button {
+    font-family: 'Interlope', sans-serif;
+  }
+
+  #sendPostcard {
+    font-size: 13px;
+    padding: 6px 16px;
+    background: #fff;
+    color: #000;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+  }
+
+  #sendPostcard:hover { opacity: 1; }
+
+  #resetBtn {
+    font-size: 11px;
+    padding: 5px 12px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+  }
+
+  #resetBtn:hover { opacity: 0.85; }
+
+  #postcard-options {
+    display: flex;
+    gap: 8px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.35s ease;
+  }
+
+  #postcard-options.open { max-height: 50px; opacity: 1; }
+
+  .postcard-option {
+    font-size: 12px;
+    padding: 5px 12px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid #ffffff44;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .postcard-option:hover { color: #fff; border-color: #fff; }
+
+  #sender-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  #sender-form.open { max-height: 50px; opacity: 1; }
+
+  #senderName, #recipientEmail {
+    font-family: 'Interlope', sans-serif;
+    font-size: 12px;
+    background: transparent;
+    color: #fff;
+    border: none;
+    border-bottom: 1px solid #555;
+    outline: none;
+    padding: 4px 6px;
+  }
+
+  #senderName { width: 160px; }
+  #recipientEmail { width: 180px; display: none; }
+  #senderName::placeholder, #recipientEmail::placeholder { color: #666; }
+
+  #confirmSendBtn {
+    font-size: 11px;
+    padding: 4px 10px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid #ffffff44;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  #confirmSendBtn:hover { opacity: 1; }
 </style>
