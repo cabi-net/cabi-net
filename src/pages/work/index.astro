@@ -205,18 +205,14 @@ let rafId = 0;
 let t = 0;
 
 const PIXEL = 3;
-const COLORS = [PINK, LILAC, PINK2, WHITE, PINK, LILAC];
-const SIZES  = [18, 14, 22, 12, 16, 20];
-const SPEEDS = [0.9, 1.3, 0.7, 1.1, 1.5, 0.8];
 
-// star positions as fractions of canvas size, seeded layout
-const POSITIONS = [
-  [0.22, 0.28],
-  [0.65, 0.18],
-  [0.48, 0.55],
-  [0.78, 0.62],
-  [0.18, 0.68],
-  [0.58, 0.82],
+const CONFIGS = [
+  { fx: 0.22, fy: 0.30, col: PINK,  alpha: 0.5,  turns: 4,   arms: 3, dir:  1, speed: 0.15, tight: 18, points: 5, starAmt: 0.55 },
+  { fx: 0.65, fy: 0.20, col: LILAC, alpha: 0.38, turns: 3.5, arms: 2, dir: -1, speed: 0.11, tight: 22, points: 5, starAmt: 0.5  },
+  { fx: 0.48, fy: 0.55, col: PINK2, alpha: 0.42, turns: 4.5, arms: 3, dir:  1, speed: 0.20, tight: 16, points: 5, starAmt: 0.6  },
+  { fx: 0.78, fy: 0.65, col: PINK,  alpha: 0.32, turns: 3,   arms: 2, dir: -1, speed: 0.13, tight: 20, points: 5, starAmt: 0.45 },
+  { fx: 0.18, fy: 0.68, col: LILAC, alpha: 0.28, turns: 3.5, arms: 2, dir:  1, speed: 0.17, tight: 14, points: 5, starAmt: 0.5  },
+  { fx: 0.60, fy: 0.82, col: PINK2, alpha: 0.35, turns: 3,   arms: 1, dir: -1, speed: 0.14, tight: 18, points: 5, starAmt: 0.55 },
 ];
 
 function pix(x: number, y: number): [number, number] {
@@ -228,21 +224,21 @@ function smoothstep(e0: number, e1: number, x: number): number {
   return x * x * (3 - 2 * x);
 }
 
-function drawStar(cx: number, cy: number, r: number, col: string, alpha: number) {
-  const ps = PIXEL, pts = 5, inner = r * 0.42;
-  const [sx, sy] = pix(cx, cy);
-  ctx.globalAlpha = alpha;
-  ctx.fillStyle = col;
-  for (let i = 0; i < pts * 2; i++) {
-    const angle = (i / pts) * Math.PI - Math.PI / 2;
-    const rad = i % 2 === 0 ? r : inner;
-    const px = Math.round((sx + Math.cos(angle) * rad) / ps) * ps;
-    const py = Math.round((sy + Math.sin(angle) * rad) / ps) * ps;
-    ctx.fillRect(px - ps / 2, py - ps / 2, ps, ps);
-  }
-  ctx.fillStyle = WHITE;
-  ctx.fillRect(sx - ps / 2, sy - ps / 2, ps, ps);
-  ctx.globalAlpha = 1;
+function noise(x: number, y: number, z: number): number {
+  return Math.sin(x * 2.1 + z * 1.3) * Math.cos(y * 1.7 + z * 0.9) * 0.5
+       + Math.sin(x * 4.3 + y * 3.1 + z * 2.1) * 0.25
+       + Math.cos(x * 0.7 + y * 1.2 + z * 3.3) * 0.25;
+}
+
+// star-shape radius modulator: makes radius pulse with N-point star symmetry
+function starRadius(baseR: number, angle: number, points: number, amount: number): number {
+  const star = Math.pow(Math.abs(Math.cos(angle * points / 2)), 0.4);
+  return baseR * (1 - amount + amount * (0.42 + 0.58 * star));
+}
+
+function hexAlpha(hex: string, a: number): string {
+  const h = parseInt(hex.replace('#', ''), 16);
+  return `rgba(${(h >> 16) & 255},${(h >> 8) & 255},${h & 255},${+a.toFixed(3)})`;
 }
 
 function frame() {
@@ -252,65 +248,82 @@ function frame() {
   hoveredIdx = -1;
   let closestDist = Infinity;
 
-  for (let i = 0; i < PROJECTS.length; i++) {
-    const [fx, fy] = POSITIONS[i];
-    const sx = fx * W, sy = fy * H;
+  for (let i = 0; i < CONFIGS.length; i++) {
+    const s = CONFIGS[i];
+    const sx = s.fx * W, sy = s.fy * H;
     const dx = sx - mouse.x, dy = sy - mouse.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < closestDist) { closestDist = dist; hoveredIdx = i; }
   }
 
-  for (let i = 0; i < PROJECTS.length; i++) {
-    const [fx, fy] = POSITIONS[i];
-    const sx = fx * W, sy = fy * H;
-    const dx = sx - mouse.x, dy = sy - mouse.y;
+  for (let i = 0; i < CONFIGS.length; i++) {
+    const s = CONFIGS[i];
+    const ox = s.fx * W, oy = s.fy * H;
+    const dx = ox - mouse.x, dy = oy - mouse.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const influence = smoothstep(1, 0, dist / (Math.min(W, H) * 0.45));
+    const influence = smoothstep(1, 0, dist / (Math.min(W, H) * 0.5));
 
-    const baseR = SIZES[i];
-    const r = baseR + influence * baseR * 0.9;
-    const twinkle = 0.55 + 0.45 * Math.sin(t * SPEEDS[i] * 2.5 + i * 1.3);
-    const alpha = (0.45 + influence * 0.5) * twinkle;
+    const steps = Math.floor(s.turns * 72);
+    const breathe = 0.75 + 0.25 * Math.sin(t * s.speed * 3);
 
-    // pixelated glow rings when hovered
-    if (influence > 0.1) {
-      for (let ring = 1; ring <= 3; ring++) {
-        const rr = r + ring * PIXEL * 2.5;
-        const ra = influence * 0.18 / ring;
-        drawStar(sx, sy, rr, COLORS[i], ra);
+    for (let arm = 0; arm < s.arms; arm++) {
+      const armOffset = (arm / s.arms) * Math.PI * 2;
+      ctx.beginPath();
+      let first = true;
+
+      for (let j = 0; j <= steps; j++) {
+        const angle = s.dir * (j / 72) * Math.PI * 2 + armOffset + t * s.speed;
+        const baseR = j * (s.tight / 72) * 6;
+        // apply star-shape modulation to the base radius
+        const starR = starRadius(baseR, angle, s.points, s.starAmt);
+        const twistedAngle = angle + s.dir * influence * 55 * (j / steps);
+        const r = Math.max(0, starR - influence * starR * 0.5);
+        const wobble = noise(Math.cos(angle) * 0.4, Math.sin(angle) * 0.4, t * 0.5 + arm) * influence * 25;
+        const nx = ox + Math.cos(twistedAngle) * (r + wobble);
+        const ny = oy + Math.sin(twistedAngle) * (r + wobble);
+        const [px, py] = pix(nx, ny);
+        first ? (ctx.moveTo(px, py), first = false) : ctx.lineTo(px, py);
       }
-    }
 
-    drawStar(sx, sy, r, COLORS[i], Math.min(1, alpha));
+      ctx.strokeStyle = hexAlpha(s.col, Math.min(0.95, s.alpha * breathe * (1 + influence * 0.8)));
+      ctx.lineWidth = 1 + influence * 1.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
 
-    // twinkle sparkle pixels
-    const sparkle = Math.sin(t * SPEEDS[i] * 4 + i * 2.1) * 0.5 + 0.5;
-    if (sparkle > 0.65) {
-      const [px, py] = pix(sx, sy);
-      ctx.globalAlpha = sparkle * (0.4 + influence * 0.4);
-      ctx.fillStyle = WHITE;
-      ctx.fillRect(px - PIXEL * 3, py, PIXEL, PIXEL);
-      ctx.fillRect(px + PIXEL * 2, py, PIXEL, PIXEL);
-      ctx.fillRect(px, py - PIXEL * 3, PIXEL, PIXEL);
-      ctx.fillRect(px, py + PIXEL * 2, PIXEL, PIXEL);
-      ctx.globalAlpha = 1;
+      // dot accents along the spiral
+      for (let j = 4; j <= steps; j += 6) {
+        const angle = s.dir * (j / 72) * Math.PI * 2 + armOffset + t * s.speed;
+        const baseR = j * (s.tight / 72) * 6;
+        const starR = starRadius(baseR, angle, s.points, s.starAmt);
+        const twistedAngle = angle + s.dir * influence * 55 * (j / steps);
+        const r = Math.max(0, starR - influence * starR * 0.5);
+        const wobble = noise(Math.cos(angle) * 0.4, Math.sin(angle) * 0.4, t * 0.5 + arm) * influence * 25;
+        const nx = ox + Math.cos(twistedAngle) * (r + wobble);
+        const ny = oy + Math.sin(twistedAngle) * (r + wobble);
+        const [px, py] = pix(nx, ny);
+        const bright = Math.sin(t * s.speed * 6 + j * 0.4) * 0.5 + 0.5;
+        if (bright > 0.55) {
+          ctx.fillStyle = hexAlpha(s.col, Math.min(0.9, (s.alpha + influence * 0.4) * bright));
+          ctx.fillRect(px, py, PIXEL - 1, PIXEL - 1);
+        }
+      }
     }
   }
 
-  // label for closest star
-  if (hoveredIdx >= 0 && closestDist < Math.min(W, H) * 0.45) {
-    const [fx, fy] = POSITIONS[hoveredIdx];
-    const [lx, ly] = pix(fx * W, fy * H);
+  // label for hovered spiral
+  if (hoveredIdx >= 0 && closestDist < Math.min(W, H) * 0.5) {
+    const s = CONFIGS[hoveredIdx];
+    const [lx, ly] = pix(s.fx * W, s.fy * H);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = '700 18px Peix, monospace';
+    ctx.font = '700 20px Peix, monospace';
     const BG = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0010';
     ctx.fillStyle = BG;
     for (const [ox, oy] of [[-2,-2],[2,-2],[-2,2],[2,2],[-3,0],[3,0],[0,-3],[0,3]]) {
-      ctx.fillText(PROJECTS[hoveredIdx].title, lx + ox, ly + oy + SIZES[hoveredIdx] + 14);
+      ctx.fillText(PROJECTS[hoveredIdx].title, lx + ox, ly + oy);
     }
     ctx.fillStyle = PINK;
-    ctx.fillText(PROJECTS[hoveredIdx].title, lx, ly + SIZES[hoveredIdx] + 14);
+    ctx.fillText(PROJECTS[hoveredIdx].title, lx, ly);
     canvas.style.cursor = 'pointer';
   } else {
     canvas.style.cursor = 'default';
