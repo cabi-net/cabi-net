@@ -3,10 +3,9 @@ import '../styles/global.css';
 
 const { title = 'cabi-net', hideNav = false } = Astro.props;
 const nav = [
-  { label: 'work',        href: '/work' },
-  { label: 'writing',     href: '/writing' },
-  { label: 'syllabus',    href: '/syllabus' },
-  { label: 'about',       href: '/about' },
+  { label: 'work',     href: '/work' },
+  { label: 'syllabus', href: '/syllabus' },
+  { label: 'about',    href: '/about' },
 ];
 const current = Astro.url.pathname;
 ---
@@ -32,7 +31,7 @@ const current = Astro.url.pathname;
             {item.label}
           </a>
         ))}
-        <a href="/work/postcard" class="postcard-link">send a postcard ↗</a>
+        <a href="https://postc4rd.neocities.org/" target="_blank" rel="noopener" class="postcard-link">send a postcard ↗</a>
       </nav>
     )}
   </header>
@@ -46,7 +45,7 @@ const current = Astro.url.pathname;
   </main>
 
   <footer>
-    <span class="muted mono">© {new Date().getFullYear()}</span>
+    <span class="muted mono">© {new Date().getFullYear()} cabi-net</span>
   </footer>
 </body>
 </html>
