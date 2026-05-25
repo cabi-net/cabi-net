@@ -7,6 +7,7 @@ import Base from '../../layouts/Base.astro';
     <section class="bio">
       <img class="frame-img" src="/assets/main/vine.png" alt="" aria-hidden="true" />
       <div class="bio-text">
+        <!--
         <p>
           My work sits at the intersection of art and technology — I enjoy building
           systems, tools, and images that stem from curiosity.
@@ -17,8 +18,9 @@ import Base from '../../layouts/Base.astro';
           to projects that are novel, strange, or useful — preferably all three, and
           ideally recursive.
         </p>
+        -->
 
-        <!-- DIAGRAM PLACEHOLDER -->
+        <p class="wip mono">under construction</p>
 
       </div>
     </section>
@@ -78,6 +80,12 @@ import Base from '../../layouts/Base.astro';
   font-size: var(--size-lg);
   line-height: 1.8;
   max-width: 52ch;
+}
+
+.wip {
+  font-size: var(--size-3xl);
+  color: var(--fg-muted);
+  opacity: 0.4;
 }
 
 .links {
