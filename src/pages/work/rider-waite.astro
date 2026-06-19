@@ -39,16 +39,7 @@ import Base from '../../layouts/Base.astro';
 --steps 4 4 4</pre>
         </div>
 
-        <div class="swatch-row">
-          <div class="swatch-col">
-            <p class="mono muted label">anchor colours</p>
-            <img src="/assets/rider-waite/anchor_swatches.png" alt="anchor swatches" class="palette" />
-          </div>
-          <div class="swatch-col">
-            <p class="mono muted label">generated palette</p>
-            <img src="/assets/rider-waite/palette.png" alt="palette ramp" class="palette" />
-          </div>
-        </div>
+        <img src="/assets/rider-waite/palette-gen.png" alt="generated palette" class="palette-gen" />
 
         <p class="mono muted label">recoloured cards</p>
         <div class="card-grid">
@@ -141,6 +132,13 @@ h1 {
 .palette {
   max-width: 280px;
   image-rendering: pixelated;
+}
+
+.palette-gen {
+  display: block;
+  margin: var(--space-lg) 0;
+  image-rendering: pixelated;
+  max-width: 100%;
 }
 
 .card-grid {
