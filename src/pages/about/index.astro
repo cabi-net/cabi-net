@@ -1,28 +1,21 @@
 ---
 import Base from '../../layouts/Base.astro';
+
+const aboutImages = Object.keys(
+  import.meta.glob('/public/assets/about/*.{png,gif,jpg,jpeg,webp,svg}')
+)
+  .map((path) => path.replace('/public', ''))
+  .sort();
 ---
 <Base title="about">
   <div class="about-page">
 
     <section class="bio">
-      <img class="frame-img" src="/assets/main/vine.png" alt="" aria-hidden="true" />
-      <div class="bio-text">
-        <!--
-        <p>
-          My work sits at the intersection of art and technology — I enjoy building
-          systems, tools, and images that stem from curiosity.
-        </p>
-        <p>
-          I believe in automation as a means for creative freedom: scripting the
-          repetitive to make space for the things I love doing and making. I'm drawn
-          to projects that are novel, strange, or useful — preferably all three, and
-          ideally recursive.
-        </p>
-        -->
-
-        <p class="wip mono">under construction</p>
-
-      </div>
+      <p class="bio-text">
+        <span class="lead">cabi-net is a&nbsp;</span>{aboutImages.map((src) => (
+          <img class="about-img" src={src} alt="" aria-hidden="true" />
+        ))}
+      </p>
     </section>
 
     <section class="links mono">
@@ -45,47 +38,29 @@ import Base from '../../layouts/Base.astro';
 
 <style>
 .about-page {
-  max-width: 600px;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
 }
 
-.bio {
-  position: relative;
-  padding-left: 120px;
-  padding-top: 5rem;
-  padding-bottom: 5rem;
-}
-
-.frame-img {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: calc(100% + 2rem);
-  width: auto;
-  opacity: 0.45;
-  filter: invert(1) sepia(1) saturate(2) hue-rotate(280deg) brightness(0.85);
-  pointer-events: none;
-}
-
 .bio-text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-.bio p {
-  font-size: var(--size-lg);
-  line-height: 1.8;
-  max-width: 52ch;
-}
-
-.wip {
   font-size: var(--size-3xl);
-  color: var(--fg-muted);
-  opacity: 0.4;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.lead {
+  white-space: nowrap;
+}
+
+.about-img {
+  height: 1em;
+  width: auto;
+  vertical-align: baseline;
+  margin: 0 0.05em;
+  display: inline;
 }
 
 .links {

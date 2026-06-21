@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:\\\\Users\\\\meric\\\\Documents\\\\Develop\\\\cabi-net\" && mkdir -p public/assets/postcard/gfx public/assets/postcard/fonts && cp archive/postcard/gfx/* public/assets/postcard/gfx/ && cp archive/postcard/assets/Univers/UniversBold.ttf public/assets/postcard/fonts/ && cp archive/postcard/assets/interlope-main/font/ttf/Interlope-Regular.ttf public/assets/postcard/fonts/ && cp archive/postcard/assets/interlope-main/font/web/Interlope-Regular.woff2 public/assets/postcard/fonts/ && cp archive/postcard/palettes.js public/assets/postcard/ && cp archive/postcard/sketch.js public/assets/postcard/)",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\meric\\\\Documents\\\\Develop\\\\cabi-net\\\\archive\\\\postcard\\\\assets\\\\Univers\\\\UniversBold.ttf\" \"c:\\\\Users\\\\meric\\\\Documents\\\\Develop\\\\cabi-net\\\\public\\\\assets\\\\postcard\\\\fonts\\\\\")",
+      "Bash(npx astro *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\meric\\Documents\\Develop\\cabi-net\\archive\\postcard\\gfx"
+    ]
+  }
+}

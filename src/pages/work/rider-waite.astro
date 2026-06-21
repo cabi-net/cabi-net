@@ -22,15 +22,10 @@ import Base from '../../layouts/Base.astro';
         entirely at runtime.
       </p>
 
-      <p>
-        The palette is built from four ordered anchors — Shadow, Base, Light, Bright —
-        whose colours and number of intermediate steps the user defines. The script
-        linearly interpolates between each adjacent pair in CIE LAB space, then snaps
-        every pixel to its nearest palette entry by Euclidean LAB distance. Output directories and palette swatches are
-        auto-named from the settings, so every run is reproducible and self-documenting.
-      </p>
-
       <div class="example">
+
+      <p class="mono muted label">User provides 4 anchor colours - Shadow, Base, Light, Bright
+       - and number of intermediate steps desired between each anchor. </p>
 
 <div class="code-block">
           <p class="mono muted label">terminal</p>
@@ -39,10 +34,12 @@ import Base from '../../layouts/Base.astro';
 --steps 4 4 4</pre>
         </div>
 
-        <p class="mono muted label">a palette will be generated based on provided parameters</p>
+        <p class="mono muted label">Palette is generated based on provided parameters: the script
+        linearly interpolates (by given number of steps) between each adjacent pair in CIE LAB space.</p>
         <img src="/assets/rider-waite/palette-gen.png" alt="generated palette" class="palette-gen" />
 
-        <p class="mono muted label">recoloured cards</p>
+        <p class="mono muted label">Finally, the script snaps every pixel from the original image to its 
+        nearest palette entry by Euclidean LAB distance.</p>
         <div class="card-grid">
           <figure>
             <img src="/assets/rider-waite/ace_of_cups-in.png" alt="Ace of Cups — original" />
