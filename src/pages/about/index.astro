@@ -38,12 +38,15 @@ const aboutImages = Object.keys(
   <script>
     const wrap = document.querySelector('.about-imgs');
     if (wrap) {
-      const imgs = Array.from(wrap.children);
-      for (let i = imgs.length - 1; i > 0; i--) {
+      const imgs = Array.from(wrap.querySelectorAll('img'));
+      const srcs = imgs.map((img) => img.getAttribute('src'));
+      for (let i = srcs.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [imgs[i], imgs[j]] = [imgs[j], imgs[i]];
+        [srcs[i], srcs[j]] = [srcs[j], srcs[i]];
       }
-      imgs.forEach((img) => wrap.appendChild(img));
+      // Reassign sources onto the fixed nodes; nodes are never re-parented,
+      // so animated GIFs can't be dropped mid-decode the way appendChild caused.
+      imgs.forEach((img, i) => img.setAttribute('src', srcs[i]));
     }
   </script>
 </Base>
