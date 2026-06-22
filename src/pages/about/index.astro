@@ -12,9 +12,9 @@ const aboutImages = Object.keys(
 
     <section class="bio">
       <p class="bio-text">
-        <span class="lead">cabi-net is a&nbsp;</span>{aboutImages.map((src) => (
+        <span class="lead">cabi-net is &nbsp;</span><span class="about-imgs">{aboutImages.map((src) => (
           <img class="about-img" src={src} alt="" aria-hidden="true" />
-        ))}
+        ))}</span>
       </p>
     </section>
 
@@ -34,11 +34,22 @@ const aboutImages = Object.keys(
     </section>
 
   </div>
+
+  <script>
+    const wrap = document.querySelector('.about-imgs');
+    if (wrap) {
+      const imgs = Array.from(wrap.children);
+      for (let i = imgs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [imgs[i], imgs[j]] = [imgs[j], imgs[i]];
+      }
+      imgs.forEach((img) => wrap.appendChild(img));
+    }
+  </script>
 </Base>
 
 <style>
 .about-page {
-  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -58,21 +69,23 @@ const aboutImages = Object.keys(
 .about-img {
   height: 1em;
   width: auto;
-  vertical-align: baseline;
+  vertical-align: middle;
   margin: 0 0.05em;
-  display: inline;
+  display: inline-block;
 }
 
 .links {
   display: flex;
   gap: var(--space-lg);
-  font-size: var(--size-sm);
+  font-size: var(--size-3xl);
+  font-weight: 600;
 }
 
 .colophon {
   font-size: var(--size-xs);
   border-top: 1px solid var(--border);
   padding-top: var(--space-lg);
+  max-width: 600px;
 }
 
 .colophon-label {

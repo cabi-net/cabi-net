@@ -12,7 +12,7 @@
   --bg:         #5c0029;
   --bg-surface: #7a0037;
   --fg:         #8ae1fc;
-  --fg-muted:   #c9a0b0;
+  --fg-muted:   #e6b8c8;
   --accent:     #ff9fe5;
   --border:     #8a1040;
 
@@ -53,7 +53,7 @@ html {
   color: var(--fg);
   font-family: var(--font-body);
   font-variation-settings: var(--peix-body);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
