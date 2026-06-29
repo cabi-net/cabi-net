@@ -1,0 +1,197 @@
+---
+import { projects } from '../data/projects.js';
+
+const name = 'Meric Sila Taskin';
+const email = 'silataskin@gmail.com';
+const site = 'cabi-net.neocities.org';
+const cv = 'cabi-net.github.io/cv-website';
+const github = 'github.com/cabi-net';
+
+// Only show shipped/linkable work in the PDF; skip in-development placeholders.
+const shown = projects.filter((p) => p.status !== 'in development');
+
+function linkFor(p) {
+  return p.repo ?? p.href ?? null;
+}
+function displayUrl(url) {
+  return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{name} — Portfolio</title>
+  <meta name="description" content={`Portfolio of ${name}`} />
+</head>
+<body>
+  <div class="toolbar">
+    <span>Press <kbd>Ctrl/Cmd</kbd> + <kbd>P</kbd> → “Save as PDF” to export this portfolio.</span>
+    <button onclick="window.print()">Save as PDF</button>
+  </div>
+
+  <main class="sheet">
+    <header class="masthead">
+      <h1>{name}</h1>
+      <p class="tagline">Creative practitioner — web, writing, code, film.</p>
+      <ul class="contact">
+        <li><a href={`mailto:${email}`}>{email}</a></li>
+        <li><a href={`https://${site}`}>{site}</a></li>
+        <li><a href={`https://${github}`}>{github}</a></li>
+        <li><a href={`https://${cv}`}>{cv}</a></li>
+      </ul>
+    </header>
+
+    <section class="projects">
+      <h2 class="section-label">Selected work</h2>
+      {shown.map((p) => {
+        const url = linkFor(p);
+        return (
+          <article class="project">
+            <div class="project-head">
+              <h3>{p.title}</h3>
+              <span class="year">{p.year}</span>
+            </div>
+            <p class="tags">{p.tags.join(' · ')}</p>
+            <p class="summary">{p.summary ?? p.oneliner}</p>
+            {url && <p class="link">{displayUrl(url)}</p>}
+          </article>
+        );
+      })}
+    </section>
+  </main>
+</body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #1a1014;
+    --muted: #6b5560;
+    --rule: #d8c4cc;
+    --accent: #8a1040;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f4eef0;
+    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    line-height: 1.5;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 760px;
+    margin: 1.5rem auto 0;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .toolbar kbd {
+    background: #f4eef0;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 0.75rem;
+  }
+  .toolbar button {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .sheet {
+    max-width: 760px;
+    margin: 1.5rem auto;
+    padding: 3rem 3.5rem;
+    background: #fff;
+    border: 1px solid var(--rule);
+  }
+
+  .masthead { border-bottom: 2px solid var(--ink); padding-bottom: 1.25rem; }
+  .masthead h1 {
+    margin: 0;
+    font-size: 2.4rem;
+    letter-spacing: -0.01em;
+  }
+  .tagline { margin: 0.35rem 0 0.9rem; color: var(--muted); font-style: italic; }
+  .contact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+  }
+  .contact a { color: var(--accent); text-decoration: none; }
+
+  .section-label {
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin: 2rem 0 0.5rem;
+  }
+
+  .project {
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--rule);
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .project-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .project-head h3 { margin: 0; font-size: 1.25rem; }
+  .year { font-family: ui-monospace, monospace; font-size: 0.8rem; color: var(--muted); }
+  .tags {
+    margin: 0.2rem 0 0.5rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .summary { margin: 0 0 0.4rem; }
+  .link {
+    margin: 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.78rem;
+    color: var(--accent);
+  }
+
+  @page { margin: 1.5cm; }
+
+  @media print {
+    html, body { background: #fff; }
+    .toolbar { display: none; }
+    .sheet {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+    a { color: var(--ink); text-decoration: none; }
+    .contact a, .link { color: var(--ink); }
+  }
+</style>

@@ -144,21 +144,23 @@ import Base from '../../layouts/Base.astro';
 
       const blocks = (data.contents || []).filter((b: any) => b.class !== 'Channel');
 
-      blocks.forEach((block: any) => {
+      // ─── ORDER ─────────────────────────────────────────────────────────
+      // Follow the manual drag order from the Are.na channel. Are.na stores
+      // that order in each block's `position` field, so sort by it.
+      blocks.sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+      // ───────────────────────────────────────────────────────────────────
+
+      blocks.forEach((block: any, i: number) => {
         const source = block.source?.url || block.attachment?.url || '';
-        const host = source ? new URL(source).hostname.replace('www.', '') : '';
         const title = block.title || 'untitled';
-        const annotation = block.description || '';
 
         const card = document.createElement('div');
         card.className = 'card';
-        const idx = String(blocks.indexOf(block) + 1).padStart(2, '0');
+        const idx = String(i + 1).padStart(2, '0');
         card.innerHTML = `
           <div class="card-index">[${idx}]</div>
           <div class="card-content">
             <div class="card-title"><a href="${source}" target="_blank" rel="noopener">${title}</a></div>
-            ${host ? `<div class="card-source">${host}</div>` : ''}
-            ${annotation ? `<div class="card-annotation">— ${annotation}</div>` : ''}
           </div>
         `;
 
