@@ -145,9 +145,10 @@ import Base from '../../layouts/Base.astro';
       const blocks = (data.contents || []).filter((b: any) => b.class !== 'Channel');
 
       // ─── ORDER ─────────────────────────────────────────────────────────
-      // Follow the manual drag order from the Are.na channel. Are.na stores
-      // that order in each block's `position` field, so sort by it.
-      blocks.sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+      // Follow the manual drag order from the Are.na channel, reversed:
+      // bottom-of-channel first. Are.na stores order in each block's
+      // `position` field, so sort by it descending.
+      blocks.sort((a: any, b: any) => (b.position ?? 0) - (a.position ?? 0));
       // ───────────────────────────────────────────────────────────────────
 
       blocks.forEach((block: any, i: number) => {
