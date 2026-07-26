@@ -76,12 +76,25 @@ export const projects = [
     repo: 'https://github.com/cabi-net/beaded-font-creator',
   },
   {
-    slug: 'collab-site',
-    title: '[untitled]',
+    slug: 'malware-buster',
+    title: 'malware buster',
+    year: '2023',
+    tags: ['game', 'unity', 'shooter'],
+    oneliner: 'A Unity shooter set inside a desktop.',
+    summary:
+      'A shooter built in Unity and set inside a desktop — the camera is framed to read as a screen you are looking at rather than a world you are inside, and the player, enemies and environment are drawn as the machine’s own furniture. Three levels, sequenced so the difficulty and the concept open up together. Playable in the browser or as a Windows download.',
+    repo: 'https://silataskin.itch.io/malware-buster',
+    status: 'in development',
+  },
+  {
+    slug: 'beatbox',
+    title: 'beatbox',
     year: '2026',
-    tags: ['web', 'collaboration'],
-    oneliner: 'In development.',
-    summary: 'A collaborative web project, currently in development.',
+    tags: ['web', 'collaboration', 'audio'],
+    oneliner: 'A beat marketplace and trading platform.',
+    summary:
+      'A collaborative marketplace and trading platform for beats. Producers list instrumentals with their metadata — BPM, key, tags — and users browse, preview, filter by tag, and switch between a list and a carousel view of the catalogue.',
+    repo: 'https://beatbox-azure.vercel.app/',
     status: 'in development',
   },
 ];
