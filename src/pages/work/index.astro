@@ -23,7 +23,6 @@ import { projects } from '../../data/projects.js';
                 {p.tags.join(' / ')}
               </span>
               <span class="project-year muted mono">{p.year}</span>
-              {p.status && <span class="project-status muted mono">[{p.status}]</span>}
             </a>
           </li>
         ))}
@@ -97,13 +96,6 @@ import { projects } from '../../data/projects.js';
 .project-year {
   font-size: var(--size-xs);
   text-align: right;
-}
-
-.project-status {
-  font-size: var(--size-xs);
-  grid-column: 1;
-  margin-top: calc(var(--space-xs) * -1);
-  padding-bottom: var(--space-xs);
 }
 
 #star-view {

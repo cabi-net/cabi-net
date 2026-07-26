@@ -19,7 +19,7 @@ export const projects = [
     tags: ['scraping', 'image processing', 'automation'],
     oneliner: 'Scraping, indexing, and recolouring the Rider-Waite tarot deck.',
     summary:
-      'A Python tool that scrapes all 78 Rider-Waite Tarot cards from Wikimedia Commons and recolours every card at runtime using a custom 4-anchor LAB colour ramp — inspired by Krita’s Index Colors filter and reimplemented from scratch. The user supplies four anchor colours and step counts; the script interpolates between them in CIE LAB space to build the palette.',
+      'A Python tool that scrapes all 78 Rider-Waite Tarot cards from Wikimedia Commons and recolours every card at runtime using a custom 4-anchor LAB colour ramp, inspired by Krita’s Index Colors filter and reimplemented from scratch. The user supplies four anchor colours and step counts; the script interpolates between them in CIE LAB space to build the palette.',
     repo: 'https://github.com/cabi-net/rider-waite-scrape-and-index',
   },
   {
@@ -41,7 +41,7 @@ export const projects = [
     tags: ['p5.js', 'generative', 'interactive'],
     oneliner: 'A generative p5.js piece built around infinite loops.',
     summary:
-      'A generative, interactive p5.js piece built around infinite loops — endlessly rotating forms set to a short epigraph.',
+      'A generative, interactive p5.js piece built around infinite loops: endlessly rotating forms set to a short epigraph.',
     repo: 'https://cabi-net.github.io/loads-me-not',
   },
   {
@@ -51,7 +51,7 @@ export const projects = [
     tags: ['chrome extension', 'javascript', 'browser'],
     oneliner: 'A Chrome extension that strips Instagram down to what you actually want.',
     summary:
-      'A Chrome extension that strips Instagram down to what you actually want — no ads, no reels, no suggested posts or people, and a chronological feed. Inspired by YouTube Redux.',
+      'A Chrome extension that strips Instagram down to what you actually want: no ads, no reels, no suggested posts or people, and a chronological feed. Inspired by YouTube Redux.',
     status: 'in development',
   },
   {
@@ -82,7 +82,7 @@ export const projects = [
     tags: ['game', 'unity', 'shooter'],
     oneliner: 'A Unity shooter set inside a desktop.',
     summary:
-      'A shooter built in Unity and set inside a desktop — the camera is framed to read as a screen you are looking at rather than a world you are inside, and the player, enemies and environment are drawn as the machine’s own furniture. Three levels, sequenced so the difficulty and the concept open up together. Playable in the browser or as a Windows download.',
+      'A shooter built in Unity and set inside a desktop. The camera is framed to read as a screen you are looking at rather than a world you are inside, and the player, enemies and environment are drawn as the machine’s own furniture. Three levels, sequenced so the difficulty and the concept open up together. Playable in the browser or as a Windows download.',
     repo: 'https://silataskin.itch.io/malware-buster',
     status: 'in development',
   },
@@ -93,7 +93,7 @@ export const projects = [
     tags: ['web', 'collaboration', 'audio'],
     oneliner: 'A beat marketplace and trading platform.',
     summary:
-      'A collaborative marketplace and trading platform for beats. Producers list instrumentals with their metadata — BPM, key, tags — and users browse, preview, filter by tag, and switch between a list and a carousel view of the catalogue.',
+      'A collaborative marketplace and trading platform for beats. Producers list instrumentals with their metadata (BPM, key, tags) and users browse, preview, filter by tag, and switch between a list and a carousel view of the catalogue.',
     repo: 'https://beatbox-azure.vercel.app/',
     status: 'in development',
   },
