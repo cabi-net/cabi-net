@@ -1,6 +1,20 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { projects } from '../../data/projects.js';
+import { getCollection } from 'astro:content';
+
+const entries = (await getCollection('projects')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// external-only pieces link straight out; everything else goes to /work/<slug>
+const projects = entries.map((e) => ({
+  slug: e.slug,
+  href: e.data.external ? e.data.links.live : undefined,
+  title: e.data.title,
+  tags: e.data.tags,
+  year: e.data.year,
+  status: e.data.status === 'in development' ? e.data.status : undefined,
+}));
 ---
 <Base title="work">
   <div class="work-index">
@@ -30,6 +44,14 @@ import { projects } from '../../data/projects.js';
       </ul>
     </div>
   </div>
+
+  <script
+    type="application/json"
+    id="star-projects"
+    set:html={JSON.stringify(
+      projects.map((p) => ({ href: p.href ?? `/work/${p.slug}`, title: p.title })),
+    )}
+  />
 </Base>
 
 <style>
@@ -136,16 +158,11 @@ import { projects } from '../../data/projects.js';
 </style>
 
 <script>
-const PROJECTS = [
-  { href: '/work/corporate-aesthetics',      title: 'corporate aesthetics' },
-  { href: '/work/rider-waite',               title: 'rider-waite recoloured' },
-  { href: 'https://postc4rd.neocities.org/', title: 'postcard' },
-  { href: '/work/daisy',                     title: 'loads me not' },
-  { href: '/work/instagram-redux',           title: 'instagram redux' },
-  { href: '/work/recur',                     title: 'recur' },
-  { href: 'https://cabi-net.github.io/beaded-font-creator/', title: 'beaded font creator' },
-  { href: '/work/collab-site',               title: '[untitled]' },
-];
+// star-view link targets, serialised from the collection by the JSON tag above —
+// keeps this view in sync with the list instead of duplicating the project array.
+const PROJECTS: { href: string; title: string }[] = JSON.parse(
+  document.getElementById('star-projects')!.textContent!,
+);
 
 const PINK   = '#ff9fe5';
 const PINK2  = '#c9a0b0';

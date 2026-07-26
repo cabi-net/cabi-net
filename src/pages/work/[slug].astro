@@ -1,0 +1,238 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  // external-only pieces link straight out from the list; they get no page here
+  return projects
+    .filter((p) => !p.data.external)
+    .map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { title, year, tags, status, links, demo, display } = project.data;
+const { Content } = await project.render();
+
+const isFullbleed = display === 'fullbleed';
+// fullbleed pages are just the embed; anything else renders the article shell
+const primary = demo[0];
+---
+{isFullbleed && primary?.kind === 'iframe' ? (
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>{title} — cabi-net</title>
+    </head>
+    <body class="fullbleed">
+      <a href="/work" class="back mono">← work</a>
+      <iframe src={primary.src} title={primary.title} allowfullscreen></iframe>
+    </body>
+  </html>
+) : (
+  <Base title={title}>
+    <article class="project-page">
+
+      <header class="project-header">
+        <h1>{title}</h1>
+        <div class="project-meta mono muted">
+          <span>{year}</span>
+          <span>{tags.join(' / ')}</span>
+          {links.source && (
+            <a href={links.source} target="_blank" rel="noopener">github ↗</a>
+          )}
+          {links.live && (
+            <a href={links.live} target="_blank" rel="noopener">live ↗</a>
+          )}
+          {links.writeup && (
+            <a href={links.writeup} target="_blank" rel="noopener">writeup ↗</a>
+          )}
+        </div>
+      </header>
+
+      <section class="project-body">
+        <Content />
+
+        {demo.map((d) => (
+          <figure class="demo">
+            {d.kind === 'iframe' && (
+              <div class="embed" style={`aspect-ratio: ${d.ratio};`}>
+                <iframe src={d.src} title={d.title} loading="lazy" allow="autoplay; clipboard-write"></iframe>
+              </div>
+            )}
+
+            {d.kind === 'video' && (
+              <video autoplay loop muted playsinline controls preload="metadata" poster={d.poster}>
+                {d.sources.map((s) => <source src={s.src} type={s.type} />)}
+              </video>
+            )}
+
+            {d.kind === 'asciinema' && (
+              <asciinema-player src={d.src}></asciinema-player>
+            )}
+
+            {d.kind === 'diff' && (
+              <div class="diff">
+                <img src={d.before} alt="before" />
+                <img src={d.after} alt="after" />
+              </div>
+            )}
+
+            {d.kind === 'images' && (
+              <div class="card-grid">
+                {d.items.map((im) => <img src={im.src} alt={im.alt} loading="lazy" />)}
+              </div>
+            )}
+
+            {d.caption && <figcaption class="mono muted">{d.caption}</figcaption>}
+          </figure>
+        ))}
+
+        {status === 'in development' && <p class="wip mono">under construction</p>}
+      </section>
+
+    </article>
+  </Base>
+)}
+
+<style>
+.project-page { max-width: 720px; }
+
+.project-header { margin-bottom: var(--space-xl); }
+
+h1 {
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+  font-size: var(--size-3xl);
+  font-weight: normal;
+  margin-bottom: var(--space-md);
+}
+
+.project-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--size-xs);
+}
+
+.project-body :global(p) {
+  max-width: 65ch;
+  line-height: 1.8;
+}
+
+.project-body :global(p + p) { margin-top: var(--space-lg); }
+
+.project-body :global(blockquote) {
+  margin: var(--space-xl) 0;
+  padding-left: var(--space-lg);
+  border-left: 1px solid var(--border);
+  color: var(--fg-muted);
+  max-width: 60ch;
+}
+
+.project-body :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-xl) 0;
+  font-size: var(--size-sm);
+}
+
+.project-body :global(th),
+.project-body :global(td) {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.project-body :global(pre) {
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-size: var(--size-xs);
+  line-height: 1.6;
+}
+
+.demo { margin: var(--space-xl) 0; }
+
+.embed { border: 1px solid var(--border); }
+
+.embed iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.demo video {
+  width: 100%;
+  border: 1px solid var(--border);
+}
+
+.diff,
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.demo figcaption {
+  margin-top: var(--space-sm);
+  font-size: var(--size-xs);
+}
+
+.wip {
+  margin-top: var(--space-2xl);
+  font-size: var(--size-3xl);
+  color: var(--fg-muted);
+  opacity: 0.4;
+}
+
+@media (max-width: 600px) {
+  .embed { aspect-ratio: 3 / 4 !important; }
+  .card-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<style is:global>
+body.fullbleed {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+body.fullbleed iframe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+body.fullbleed .back {
+  position: fixed;
+  top: 1rem;
+  left: 1.5rem;
+  z-index: 10;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+body.fullbleed .back:hover { opacity: 1; }
+</style>
+
+<script>
+  // The looping demo clip is decorative motion; pause it for anyone who has
+  // asked the OS for less movement. `autoplay` still covers everyone else.
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (const v of document.querySelectorAll<HTMLVideoElement>('.demo video')) {
+      v.removeAttribute('autoplay');
+      v.pause();
+    }
+  }
+</script>
