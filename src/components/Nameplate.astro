@@ -1,0 +1,33 @@
+---
+// The type-set nameplate. Identical on the tile and, scaled up, on the project
+// page header — that shared mark is the through-line between the two.
+//
+// Sizes map to the site's type scale; Peix's display axes carry the expression.
+interface Props {
+  title: string;
+  size?: 'tile' | 'hero' | 'page';
+  as?: 'span' | 'h1';
+}
+
+const { title, size = 'tile', as: Tag = 'span' } = Astro.props;
+---
+<Tag class:list={['nameplate', `is-${size}`]}>{title}</Tag>
+
+<style>
+.nameplate {
+  font-family: var(--font-display);
+  font-variation-settings: var(--peix-display);
+  /* titles carry the cyan; body copy stays off-white to avoid the
+     cyan-on-burgundy vibration at small sizes */
+  color: var(--fg);
+  /* normal weight — the Peix BLCK axis carries the expression, and a numeric
+     weight here fights it */
+  font-weight: normal;
+  line-height: 1;
+}
+
+.is-tile { font-size: var(--size-lg); }
+.is-hero { font-size: var(--size-xl); }
+
+.is-page { font-size: var(--size-3xl); }
+</style>

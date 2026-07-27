@@ -1,5 +1,16 @@
 ---
-import { projects } from '../data/projects.js';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({
+    title: e.data.title,
+    year: e.data.year,
+    tags: e.data.tags,
+    blurb: e.data.blurb,
+    status: e.data.status,
+    url: e.data.links.source ?? e.data.links.live ?? null,
+  }));
 
 const name = 'Meric Sila Taskin';
 const email = 'silataskin@gmail.com';
@@ -10,9 +21,6 @@ const github = 'github.com/cabi-net';
 // Only show shipped/linkable work in the PDF; skip in-development placeholders.
 const shown = projects.filter((p) => p.status !== 'in development');
 
-function linkFor(p) {
-  return p.repo ?? p.href ?? null;
-}
 function displayUrl(url) {
   return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
@@ -46,7 +54,7 @@ function displayUrl(url) {
     <section class="projects">
       <h2 class="section-label">Selected work</h2>
       {shown.map((p) => {
-        const url = linkFor(p);
+        const url = p.url;
         return (
           <article class="project">
             <div class="project-head">
@@ -54,7 +62,7 @@ function displayUrl(url) {
               <span class="year">{p.year}</span>
             </div>
             <p class="tags">{p.tags.join(' · ')}</p>
-            <p class="summary">{p.summary ?? p.oneliner}</p>
+            <p class="summary">{p.blurb}</p>
             {url && <p class="link">{displayUrl(url)}</p>}
           </article>
         );

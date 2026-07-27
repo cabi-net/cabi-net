@@ -1,0 +1,267 @@
+---
+import Nameplate from './Nameplate.astro';
+
+// One tile kind for every project. No bespoke interiors: nameplate + optional
+// thumb + blurb + meta. A tile with no thumb is type-only, which is the
+// intended good case rather than a degraded one.
+interface Props {
+  href: string;
+  title: string;
+  blurb: string;
+  year: number;
+  emphasis: 1 | 2 | 3;
+  thumb?: string;
+  thumbPair?: string[];
+  external?: boolean;
+}
+
+const { href, title, blurb, year, emphasis, thumb, thumbPair, external } = Astro.props;
+---
+<a
+  class:list={['tile', `e${emphasis}`]}
+  href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener' : undefined}
+  aria-label={title}
+>
+  <div class="tile-hd">
+    <Nameplate title={title} size={emphasis === 3 ? 'hero' : 'tile'} />
+    <span class="tile-meta">{year}</span>
+  </div>
+
+  {/* no thumb -> type-only card, which is a deliberate good case, not a gap.
+      the media sits in a tinted well; hover clears the tint to true colour. */}
+  {thumbPair ? (
+    <div class="tile-media">
+      <div class="tile-thumb tile-pair">
+        {thumbPair.map((src) => <img src={src} alt="" loading="lazy" />)}
+      </div>
+      <span class="media-spiral" aria-hidden="true"></span>
+    </div>
+  ) : thumb ? (
+    <div class="tile-media">
+      <img class="tile-thumb" src={thumb} alt="" loading="lazy" />
+      <span class="media-spiral" aria-hidden="true"></span>
+    </div>
+  ) : null}
+
+  <p class="tile-blurb">{blurb}</p>
+</a>
+
+<style>
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 0.95rem 1rem 1.05rem;
+  /* flat containment: a colour block sitting flush on the page. no shadow, no
+     radius, no lift, and no rule — the spiral band below is the only edge. */
+  background: var(--bg-surface);
+  text-decoration: none;
+  color: var(--fg-body);
+}
+
+/* A band of small spirals runs inside the tile's edge — the same star-spiral
+   figure as the old /work canvas, reduced to ornament.
+   Four repeating layers rather than `border-image`: border-image slices the
+   strip into corner/edge pieces and cuts each spiral in half. Backgrounds keep
+   every figure whole and let the band turn the corner cleanly. */
+.tile::before {
+  content: '';
+  position: absolute;
+  /* inset a little: with no rule to sit against, a band flush to the edge reads
+     as falling off the block rather than framing it */
+  inset: 3px;
+  z-index: 1;
+  pointer-events: none;
+  background-image: var(--spiral-band), var(--spiral-band), var(--spiral-band-v),
+    var(--spiral-band-v);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-position: left top, left bottom, left top, right top;
+  background-size: auto 11px, auto 11px, 11px auto, 11px auto;
+  opacity: 0.32;
+  transition: opacity 260ms ease;
+}
+
+/* hover lights up the spiral frame — the card itself doesn't change value, so
+   the only things that move are the ornament and the image coming true */
+.tile:hover::before,
+.tile:focus-visible::before { opacity: 1; }
+
+/* the tile's own content sits above the ornament */
+.tile > * { position: relative; z-index: 2; }
+
+.tile:hover,
+.tile:focus-visible { outline: none; }
+
+.tile:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: -1px;
+}
+
+.tile-hd {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.tile-meta {
+  font-family: var(--font-mono);
+  font-variation-settings: var(--peix-tag);
+  font-size: 0.55rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* The media well. Thumbnails come from wildly different sources — a blue stock
+   photo, beige 3D renders, screenshots — so at rest they're pushed into the
+   site's magenta/cyan range to read as one set. Hover clears the treatment and
+   the true colours come back. */
+.tile-media {
+  position: relative;
+  isolation: isolate;
+  min-height: 0;
+  flex: 1 1 auto;
+  border-radius: 0;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+  /* shows through the transparent 3D renders */
+  background: var(--bg-surface);
+}
+
+/* Shadows take the magenta, highlights the cyan: a true two-tone map rather
+   than a single wash, so images still separate from each other by luminance.
+   `screen` lifts the dark end instead of a `multiply` that crushed light
+   screenshots into flat rectangles. */
+.tile-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(150deg, #3f9fc4 0%, #8f5480 45%, var(--bg) 100%);
+  mix-blend-mode: color;
+  opacity: 0.85;
+  transition: opacity 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+/* A light magenta veil. Light-background thumbnails (UI screenshots, the tarot
+   scans) sit almost entirely at the highlight end of the gradient above, so
+   without this they stay near-white and read as unrelated to the darker tiles. */
+.tile-media::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--bg-surface);
+  mix-blend-mode: multiply;
+  opacity: 0.3;
+  transition: opacity 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+/* A field of spirals laid over the image, so the thumbnails carry the same
+   ornament as the frames. Lifts with the duotone on hover — the treatment and
+   the pattern clear together, leaving the photograph alone. */
+.media-spiral {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background-image: var(--spiral-coil);
+  background-repeat: repeat;
+  background-size: 56px auto;
+  opacity: 0.5;
+  /* `screen` rather than `overlay`: overlay is a no-op against mid-tones, which
+     is most of a duotoned image, so the pattern vanished entirely */
+  mix-blend-mode: screen;
+  transition: opacity 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.tile:hover .tile-media::after,
+.tile:focus-visible .tile-media::after,
+.tile:hover .tile-media::before,
+.tile:focus-visible .tile-media::before,
+.tile:hover .media-spiral,
+.tile:focus-visible .media-spiral {
+  opacity: 0;
+}
+
+.tile-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  filter: saturate(0.5) contrast(1.2) brightness(0.94);
+  transition: filter 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* colour returns on hover; the image doesn't move — scaling would reintroduce
+   the floating quality the flat treatment is meant to remove */
+/* the untouched photograph */
+.tile:hover .tile-thumb,
+.tile:focus-visible .tile-thumb {
+  filter: none;
+}
+
+/* a before/after pair: both images sit whole inside the slot rather than
+   cropping, since the comparison is the point */
+.tile-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  overflow: hidden;
+  /* lighter than the page ground so the pair doesn't read as a dark slab
+     against its neighbours once the duotone lands on top */
+  background: var(--bg-surface);
+}
+
+.tile-pair img {
+  height: 100%;
+  width: auto;
+  max-width: calc(50% - 0.25rem);
+  object-fit: contain;
+  border-radius: 0;
+}
+
+/* `margin-top: auto` pins the blurb to the bottom of the card. rows stretch
+   every tile to the tallest one, so without this a short tile next to a tall
+   neighbour leaves its slack as a gap under the text. */
+.tile-blurb {
+  font-family: var(--font-body);
+  font-variation-settings: var(--peix-body);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  opacity: 0.82;
+  margin-top: auto;
+}
+
+/* emphasis = size. a bigger tile is you saying this one matters more. */
+.e3 { grid-column: span 4; }
+.e2 { grid-column: span 3; }
+.e1 { grid-column: span 2; }
+
+@media (max-width: 720px) {
+  .e1, .e2, .e3 { grid-column: span 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .tile-thumb,
+  .tile-media::before,
+  .tile-media::after { transition: none; }
+  .tile:hover,
+  .tile:focus-visible { transform: none; }
+  /* the colour reveal still happens — only the movement is dropped */
+  .tile:hover .tile-thumb,
+  .tile:focus-visible .tile-thumb { transform: none; }
+}
+</style>

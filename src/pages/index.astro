@@ -26,7 +26,7 @@ import '../styles/global.css';
   width: 100vw;
   height: 100vh;
   position: relative;
-  background: #5c0029;
+  background: #4a0725;
   overflow: hidden;
 }
 
@@ -61,7 +61,7 @@ html, body {
 #throbber-index {
   position: fixed;
   inset: 0;
-  background: #5c0029;
+  background: #4a0725;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -126,7 +126,7 @@ const canvas = document.getElementById('spiral-bg');
 const ctx = canvas.getContext('2d');
 let W, H, t = 0, mouse = {x:-999, y:-999}, trail = [];
 const PIXEL = 4, TRAIL = 55;
-const PINK = '#ff9fe5', PINK2 = '#c9a0b0', LILAC = '#8ae1fc', WHITE = '#ffd6f0', BG = '#5c0029';
+const PINK = '#ff9fe5', PINK2 = '#c9a0b0', LILAC = '#8ae1fc', WHITE = '#ffd6f0', BG = '#4a0725';
 
 function hexAlpha(hex, a){
   const h = parseInt(hex.replace('#',''), 16);
