@@ -1,10 +1,12 @@
 ---
-title: recur
-blurb: A minimal command-line journal that surfaces echoes between past and present entries.
+title: recur.py
+blurb: "a local-first command-line journal that surfaces echoes between entries. write a thought, and if a word you've used before appears, it brings that older entry forward."
 year: 2026
-order: 6
+order: 3
+emphasis: 2
 tags: [cli, python, local-first]
 status: finished
+thumb: /assets/thumbs/recur.png
 links:
   source: https://github.com/cabi-net/recur
 ---

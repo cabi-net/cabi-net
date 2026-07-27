@@ -4,3 +4,6 @@ dist/
 .env
 .DS_Store
 *.local
+
+# working files: 3D models and full-size image sources used to make thumbnails
+assets/

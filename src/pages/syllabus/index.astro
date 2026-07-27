@@ -18,6 +18,7 @@ import Base from '../../layouts/Base.astro';
 <style>
 .syllabus-page {
   max-width: 900px;
+  margin-inline: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
@@ -32,8 +33,8 @@ import Base from '../../layouts/Base.astro';
 #daisy-loading {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--space-xl);
+  justify-content: flex-start;
+  padding: var(--space-lg) 0;
 }
 
 #daisy-loading.hidden {
@@ -43,7 +44,7 @@ import Base from '../../layouts/Base.astro';
 .cards {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-md);
   max-width: 640px;
   font-family: var(--font-mono);
 }

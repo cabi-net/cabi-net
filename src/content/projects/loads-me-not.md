@@ -1,10 +1,12 @@
 ---
 title: loads me not
-blurb: A generative p5.js piece built around infinite loops.
+blurb: "a generative, interactive p5.js piece built around infinite loops. doubles as a throbber design used on this very website."
 year: 2026
-order: 4
+order: 5
+emphasis: 1
 tags: [p5.js, generative, interactive]
 status: finished
+thumb: /assets/thumbs/loads-me-not.png
 display: fullbleed
 links:
   live: https://cabi-net.github.io/loads-me-not

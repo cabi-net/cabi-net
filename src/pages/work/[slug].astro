@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, year, tags, status, links, demo, display } = project.data;
+const { title, year, tags, links, demo, display } = project.data;
 const { Content } = await project.render();
 
 const isFullbleed = display === 'fullbleed';
@@ -34,6 +34,8 @@ const primary = demo[0];
 ) : (
   <Base title={title}>
     <article class="project-page">
+
+      <a href="/work" class="back-link mono">← work</a>
 
       <header class="project-header">
         <h1>{title}</h1>
@@ -90,7 +92,6 @@ const primary = demo[0];
           </figure>
         ))}
 
-        {status === 'in development' && <p class="wip mono">under construction</p>}
       </section>
 
     </article>
@@ -98,9 +99,39 @@ const primary = demo[0];
 )}
 
 <style>
-.project-page { max-width: 720px; }
+.project-page { max-width: 720px;
+  margin-inline: auto; }
 
-.project-header { margin-bottom: var(--space-xl); }
+.back-link {
+  display: inline-block;
+  margin-bottom: var(--space-lg);
+  font-size: var(--size-xs);
+  font-variation-settings: var(--peix-tag);
+  color: var(--fg-muted);
+}
+
+.back-link:hover { color: var(--fg); }
+
+.project-header {
+  position: relative;
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+}
+
+/* the same spiral band that frames the tiles, closing the page header */
+.project-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10px;
+  background-image: var(--spiral-bloom);
+  background-repeat: repeat-x;
+  background-size: auto 10px;
+  opacity: 0.3;
+  pointer-events: none;
+}
 
 h1 {
   font-family: var(--font-display);
@@ -112,6 +143,7 @@ h1 {
 
 .project-meta {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-lg);
   font-size: var(--size-xs);
 }
@@ -181,13 +213,6 @@ h1 {
 .demo figcaption {
   margin-top: var(--space-sm);
   font-size: var(--size-xs);
-}
-
-.wip {
-  margin-top: var(--space-2xl);
-  font-size: var(--size-3xl);
-  color: var(--fg-muted);
-  opacity: 0.4;
 }
 
 @media (max-width: 600px) {

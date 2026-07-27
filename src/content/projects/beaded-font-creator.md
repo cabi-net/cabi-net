@@ -1,10 +1,12 @@
 ---
 title: beaded font creator
-blurb: A tool for building bead-grid fonts.
+blurb: "an interactive web tool for building bead-grid fonts."
 year: 2026
-order: 7
+order: 8
+emphasis: 1
 tags: [web, interactive, type]
 status: finished
+thumb: /assets/thumbs/beaded-font-creator.jpg
 external: true
 links:
   live: https://cabi-net.github.io/beaded-font-creator/

@@ -43,9 +43,15 @@ const projects = defineCollection({
     year: z.number(),
     // explicit hand-sort; ascending. year alone can't order these (all 2026).
     order: z.number(),
+    // tile size in the bento grid: 3 hero / 2 standard / 1 minor. Deliberately
+    // separate from `order` — sequence and importance are different axes.
+    emphasis: z.union([z.literal(1), z.literal(2), z.literal(3)]).default(2),
     tags: z.array(z.string()),
     status: z.enum(['finished', 'in development']).default('finished'),
     thumb: z.string().optional(),
+    // two images shown side by side in the tile's slot — for before/after pairs,
+    // where one image alone doesn't say what the project does
+    thumbPair: z.array(z.string()).length(2).optional(),
     links: z
       .object({
         live: z.string().url().optional(),

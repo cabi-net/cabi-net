@@ -45,7 +45,7 @@ const current = Astro.url.pathname;
   </main>
 
   <footer>
-    <span class="muted mono">© {new Date().getFullYear()} cabi-net</span>
+    <span class="muted mono">© {new Date().getFullYear()} Meric Sila Taskin</span>
   </footer>
 </body>
 </html>
@@ -56,11 +56,25 @@ header {
   align-items: baseline;
   justify-content: space-between;
   padding: var(--space-lg) var(--space-xl);
-  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   background: var(--bg);
   z-index: 100;
+}
+
+/* the spiral band replaces the header's hairline rule */
+header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 10px;
+  background-image: var(--spiral-sparse);
+  background-repeat: repeat-x;
+  background-size: auto 10px;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .wordmark {
@@ -91,13 +105,32 @@ nav a.active {
 
 main {
   padding: var(--space-xl);
+  /* pages set their own max-width; this centres whatever that turns out to be
+     instead of letting it hug the left edge on wide screens */
+  max-width: 1100px;
+  margin-inline: auto;
+  width: 100%;
   /* Override per-page as needed */
 }
 
 footer {
+  position: relative;
   padding: var(--space-lg) var(--space-xl);
-  border-top: 1px solid var(--border);
   font-size: var(--size-xs);
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -5px;
+  height: 10px;
+  background-image: var(--spiral-sparse);
+  background-repeat: repeat-x;
+  background-size: auto 10px;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 @media (max-width: 600px) {

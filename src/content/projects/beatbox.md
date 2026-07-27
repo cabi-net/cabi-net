@@ -1,10 +1,12 @@
 ---
 title: beatbox
-blurb: A beat marketplace and trading platform.
+blurb: "a beat marketplace and bartering platform: producers list instrumentals with their metadata, and users can browse, preview, purchase or trade beats."
 year: 2026
-order: 9
+order: 1
+emphasis: 2
 tags: [web, collaboration, audio]
 status: in development
+thumb: /assets/thumbs/beatbox.png
 links:
   live: https://beatbox-azure.vercel.app/
 demo:

@@ -85,10 +85,25 @@ const aboutImages = Object.keys(
 }
 
 .colophon {
+  position: relative;
   font-size: var(--size-xs);
-  border-top: 1px solid var(--border);
   padding-top: var(--space-lg);
   max-width: 600px;
+  margin-inline: auto;
+}
+
+.colophon::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 10px;
+  background-image: var(--spiral-coil);
+  background-repeat: repeat-x;
+  background-size: auto 10px;
+  opacity: 0.3;
+  pointer-events: none;
 }
 
 .colophon-label {
