@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const { title, year, tags, links, demo, display } = project.data;
+const { title, year, tags, status, links, demo, display } = project.data;
 const { Content } = await project.render();
 
 const isFullbleed = display === 'fullbleed';
@@ -42,6 +42,7 @@ const primary = demo[0];
         <div class="project-meta mono muted">
           <span>{year}</span>
           <span>{tags.join(' / ')}</span>
+          {status === 'in development' && <span class="status">in development</span>}
           {links.source && (
             <a href={links.source} target="_blank" rel="noopener">github ↗</a>
           )}
@@ -147,6 +148,8 @@ h1 {
   gap: var(--space-lg);
   font-size: var(--size-xs);
 }
+
+.project-meta .status { color: var(--accent); }
 
 .project-body :global(p) {
   max-width: 65ch;

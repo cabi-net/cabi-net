@@ -137,7 +137,9 @@ import Base from '../../layouts/Base.astro';
 
   raf = requestAnimationFrame(drawDaisy);
 
-  fetch(`https://api.are.na/v2/channels/${CHANNEL}?per=100`)
+  // Are.na serves `Cache-Control: max-age=604800` (a week), so without this the
+  // browser keeps showing a stale channel long after you've edited it.
+  fetch(`https://api.are.na/v2/channels/${CHANNEL}?per=100`, { cache: 'no-store' })
     .then(r => r.json())
     .then(data => {
       cancelAnimationFrame(raf);
@@ -154,7 +156,14 @@ import Base from '../../layouts/Base.astro';
 
       blocks.forEach((block: any, i: number) => {
         const source = block.source?.url || block.attachment?.url || '';
-        const title = block.title || 'untitled';
+        // Are.na returns titles already HTML-escaped ("Lialina &amp; Dragan"),
+        // and these go through innerHTML, so decode once or the entity shows.
+        const decode = (s: string) => {
+          const el = document.createElement('textarea');
+          el.innerHTML = s;
+          return el.value;
+        };
+        const title = decode(block.title || 'untitled');
 
         const card = document.createElement('div');
         card.className = 'card';
