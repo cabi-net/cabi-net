@@ -5,5 +5,10 @@ dist/
 .DS_Store
 *.local
 
-# working files: 3D models and full-size image sources used to make thumbnails
-assets/
+# working files: 3D models and full-size image sources used to make thumbnails.
+# leading slash matters — a bare `assets/` also matches public/assets/, which
+# silently kept every site image out of the repo and out of the deploy.
+/assets/
+
+# Krita working files
+*.kra
