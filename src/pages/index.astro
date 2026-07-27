@@ -26,7 +26,7 @@ import '../styles/global.css';
   width: 100vw;
   height: 100vh;
   position: relative;
-  background: #4a0725;
+  background: var(--bg);
   overflow: hidden;
 }
 
@@ -61,7 +61,7 @@ html, body {
 #throbber-index {
   position: fixed;
   inset: 0;
-  background: #4a0725;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,7 +106,9 @@ html, body {
       ctx.fill(); ctx.restore();
     }
     ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2);
-    ctx.fillStyle = '#ff9fe5'; ctx.fill();
+    ctx.fillStyle = getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent').trim() || '#ff9fe5';
+    ctx.fill();
     raf = requestAnimationFrame(drawDaisy);
   }
   raf = requestAnimationFrame(drawDaisy);
@@ -126,7 +128,15 @@ const canvas = document.getElementById('spiral-bg');
 const ctx = canvas.getContext('2d');
 let W, H, t = 0, mouse = {x:-999, y:-999}, trail = [];
 const PIXEL = 4, TRAIL = 55;
-const PINK = '#ff9fe5', PINK2 = '#c9a0b0', LILAC = '#8ae1fc', WHITE = '#ffd6f0', BG = '#4a0725';
+// read from the stylesheet so the canvas can't drift from the palette
+const css = getComputedStyle(document.documentElement);
+const tok = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+
+const PINK = tok('--accent', '#ff9fe5');
+const PINK2 = tok('--spiral-c', '#c9a0b0');
+const LILAC = tok('--fg', '#8ae1fc');
+const WHITE = '#ffd6f0';
+const BG = tok('--bg', '#4a0725');
 
 function hexAlpha(hex, a){
   const h = parseInt(hex.replace('#',''), 16);

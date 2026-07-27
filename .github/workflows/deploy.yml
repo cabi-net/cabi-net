@@ -53,3 +53,6 @@ jobs:
           api_key: ${{ secrets.NEOCITIES_API_KEY }}
           dist_dir: dist
           cleanup: true
+          # supporter accounts have the file-type whitelist lifted; without this
+          # the action filters out mp4/webm client-side and never uploads them
+          neocities_supporter: true
