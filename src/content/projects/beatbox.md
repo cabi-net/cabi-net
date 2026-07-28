@@ -16,6 +16,4 @@ demo:
     caption: Live embed
 ---
 
-A collaborative marketplace and trading platform for beats. Producers list
-instrumentals with their metadata — BPM, key, tags — and users browse, preview,
-filter by tag, and switch between a list and a carousel view of the catalogue.
+A collaborative marketplace and trading platform for beats. Producers list instrumentals with their metadata (BPM, key, tags), and users can browse, preview, purchase or trade beats. I am the co-designer and fullstack developer of this project.
