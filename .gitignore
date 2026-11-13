@@ -12,3 +12,4 @@ dist/
 
 # Krita working files
 *.kra
+.claude/
